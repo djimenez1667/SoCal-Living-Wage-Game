@@ -163,7 +163,7 @@
     </header>
 
     <!-- Main Game Container -->
-    <main class="flex-grow flex flex-col items-center justify-center w-full">
+    <main class="flex-grow flex flex-col w-full">
         
         <!-- SCREEN 0: INTRO -->
         <section id="screen-0" class="game-screen active w-full min-h-screen flex items-center justify-center bg-sunset relative overflow-hidden">
@@ -171,12 +171,12 @@
             <div class="absolute bottom-0 w-full h-64 bg-black/20" style="clip-path: polygon(0 100%, 100% 100%, 100% 30%, 50% 0, 0 40%);"></div>
             <div class="absolute bottom-0 text-white/10 text-9xl font-black -mb-10 w-full text-center tracking-tighter whitespace-nowrap">SOUTHERN CALIFORNIA</div>
             
-            <div class="z-10 text-center max-w-2xl px-6">
+            <div class="z-10 flex flex-col items-center justify-center text-center max-w-2xl px-6 mx-auto">
                 <div class="inline-block bg-white/20 backdrop-blur-md px-4 py-1 rounded-full text-white text-sm font-bold tracking-widest mb-6">EDUCATIONAL PROTOTYPE</div>
-                <h1 class="text-6xl md:text-8xl font-black text-white leading-tight mb-4 drop-shadow-lg">
+                <h1 class="text-6xl md:text-8xl font-black text-white leading-tight mb-4 drop-shadow-lg text-center">
                     SO CAL:<br>MAKE ENDS MEET
                 </h1>
-                <p class="text-xl md:text-2xl text-white/90 font-medium mb-12 drop-shadow">
+                <p class="text-xl md:text-2xl text-white/90 font-medium mb-12 drop-shadow text-center">
                     How much does it <i>really</i> cost to live in Southern California?<br>
                     Build a household. Choose a county. See what your paycheck has to cover.
                 </p>
@@ -698,6 +698,16 @@
                 // Show target screen
                 const targetScreen = document.getElementById(`screen-${step}`);
                 if (targetScreen) targetScreen.classList.add('active');
+
+                // Smoothly guide the user to the active screen interface
+                setTimeout(() => {
+                    const header = document.getElementById('game-header');
+                    const headerHeight = header && !header.classList.contains('hidden') ? header.offsetHeight : 0;
+                    // Calculate exact position to scroll to, accounting for the sticky header
+                    const targetPosition = targetScreen.getBoundingClientRect().top + window.scrollY - headerHeight;
+                    
+                    window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+                }, 50);
 
                 // Update Progress Bar
                 for(let i=1; i<=5; i++) {
