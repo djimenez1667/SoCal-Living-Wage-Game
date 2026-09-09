@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SO CAL: MAKE ENDS MEET</title>
+    
+    <!-- Tailwind CSS for Responsive Layout & Utility Classes -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Southern California Theme Colors */
+            --sunset-orange: #f97316;
+            --sunset-gold: #fbbf24;
+            --sunset-pink: #ec4899;
+            --deep-blue: #1e3a8a;
+            --teal: #14b8a6;
+            --cream: #faf8f5;
+            
+            /* Expense Categories */
+            --c-childcare: #a855f7;
+            --c-housing: #f97316;
+            --c-taxes: #3b82f6;
+            --c-transportation: #22c55e;
+            --c-food: #eab308;
+            --c-health: #f43f5e;
+            --c-other: #94a3b8;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--cream);
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .interactive-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        /* Gradients */
+        .bg-sunset {
+            background: linear-gradient(135deg, var(--deep-blue) 0%, #4c1d95 40%, var(--sunset-pink) 70%, var(--sunset-gold) 100%);
+        }
+        
+        .text-sunset {
+            background: linear-gradient(to right, var(--sunset-orange), var(--sunset-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Layout & Screen Management */
+        .game-screen {
+            display: none;
+            opacity: 0;
+            animation: fadeIn 0.4s ease forwards;
+        }
+        .game-screen.active {
+            display: block;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Custom Sliders */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: var(--sunset-orange);
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.2s ease;
+        }
+
+        /* Progress Steps */
+        .step-dot {
+            transition: all 0.3s;
+        }
+        .step-dot.active {
+            background-color: var(--sunset-orange);
+            transform: scale(1.3);
+        }
+        .step-line.active {
+            background-color: var(--sunset-orange);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative">
+
+    <!-- Top Navigation / Progress -->
+    <header id="game-header" class="hidden sticky top-0 z-40 bg-white/80 backdrop-blur-md shadow-sm w-full border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="font-black text-xl tracking-tight text-slate-800 flex items-center gap-2">
+                🌅 <span class="text-sunset">SO CAL: MAKE ENDS MEET</span>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="flex items-center w-full md:w-1/2">
+                <div id="prog-dot-1" class="step-dot w-4 h-4 rounded-full bg-gray-300"></div>
+                <div id="prog-line-1" class="step-line flex-1 h-1 bg-gray-300 mx-1 rounded"></div>
+                <div id="prog-dot-2" class="step-dot w-4 h-4 rounded-full bg-gray-300"></div>
+                <div id="prog-line-2" class="step-line flex-1 h-1 bg-gray-300 mx-1 rounded"></div>
+                <div id="prog-dot-3" class="step-dot w-4 h-4 rounded-full bg-gray-300"></div>
+                <div id="prog-line-3" class="step-line flex-1 h-1 bg-gray-300 mx-1 rounded"></div>
+                <div id="prog-dot-4" class="step-dot w-4 h-4 rounded-full bg-gray-300"></div>
+                <div id="prog-line-4" class="step-line flex-1 h-1 bg-gray-300 mx-1 rounded"></div>
+                <div id="prog-dot-5" class="step-dot w-4 h-4 rounded-full bg-gray-300"></div>
+            </div>
+            
+            <button id="btn-reset" class="text-sm font-semibold text-slate-500 hover:text-red-500 transition-colors">START OVER</button>
+        </div>
+    </header>
+
+    <!-- Main Game Container -->
+    <main class="flex-grow flex flex-col items-center justify-center w-full">
+        
+        <!-- SCREEN 0: INTRO -->
+        <section id="screen-0" class="game-screen active w-full min-h-screen flex items-center justify-center bg-sunset relative overflow-hidden">
+            <!-- Decorative BG Elements -->
+            <div class="absolute bottom-0 w-full h-64 bg-black/20" style="clip-path: polygon(0 100%, 100% 100%, 100% 30%, 50% 0, 0 40%);"></div>
+            <div class="absolute bottom-0 text-white/10 text-9xl font-black -mb-10 w-full text-center tracking-tighter whitespace-nowrap">SOUTHERN CALIFORNIA</div>
+            
+            <div class="z-10 text-center max-w-2xl px-6">
+                <div class="inline-block bg-white/20 backdrop-blur-md px-4 py-1 rounded-full text-white text-sm font-bold tracking-widest mb-6">EDUCATIONAL PROTOTYPE</div>
+                <h1 class="text-6xl md:text-8xl font-black text-white leading-tight mb-4 drop-shadow-lg">
+                    SO CAL:<br>MAKE ENDS MEET
+                </h1>
+                <p class="text-xl md:text-2xl text-white/90 font-medium mb-12 drop-shadow">
+                    How much does it <i>really</i> cost to live in Southern California?<br>
+                    Build a household. Choose a county. See what your paycheck has to cover.
+                </p>
+                <button id="btn-start" class="bg-white text-slate-900 font-bold text-xl px-10 py-5 rounded-full hover:scale-105 transition-transform shadow-[0_0_40px_rgba(255,255,255,0.4)]">
+                    START THE GAME ➔
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 1: COUNTY -->
+        <section id="screen-1" class="game-screen w-full max-w-5xl mx-auto px-4 py-12">
+            <div class="text-center mb-10">
+                <h2 class="text-sm font-bold text-slate-500 tracking-widest mb-2">STEP 1</h2>
+                <h1 class="text-4xl md:text-5xl font-black text-slate-800">Where do you live?</h1>
+                <p class="text-lg text-slate-600 mt-4">Select a Southern California county to begin.</p>
+            </div>
+            
+            <div id="county-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Counties populated by JS -->
+            </div>
+        </section>
+
+        <!-- SCREEN 2: HOUSEHOLD BUILDER -->
+        <section id="screen-2" class="game-screen w-full max-w-4xl mx-auto px-4 py-12">
+            <div class="text-center mb-10">
+                <h2 class="text-sm font-bold text-slate-500 tracking-widest mb-2">STEP 2</h2>
+                <h1 class="text-4xl md:text-5xl font-black text-slate-800">Build Your Household</h1>
+                <p class="text-lg text-slate-600 mt-4">Who lives in your home? (For this simulation, up to 2 adults and 3 children).</p>
+            </div>
+
+            <div class="glass-card p-8 md:p-12">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <!-- Controls -->
+                    <div class="space-y-8">
+                        <!-- Adults -->
+                        <div class="flex justify-between items-center border-b pb-4">
+                            <div>
+                                <h3 class="font-bold text-xl">Adults</h3>
+                                <p class="text-sm text-slate-500">Ages 18+</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <button class="btn-adult-minus w-10 h-10 rounded-full bg-slate-200 hover:bg-slate-300 font-bold text-xl flex items-center justify-center">−</button>
+                                <span id="val-adults" class="text-2xl font-black w-6 text-center">1</span>
+                                <button class="btn-adult-plus w-10 h-10 rounded-full bg-slate-200 hover:bg-slate-300 font-bold text-xl flex items-center justify-center">+</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Children -->
+                        <div class="flex justify-between items-center border-b pb-4">
+                            <div>
+                                <h3 class="font-bold text-xl">Children</h3>
+                                <p class="text-sm text-slate-500">Under 18</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <button class="btn-child-minus w-10 h-10 rounded-full bg-slate-200 hover:bg-slate-300 font-bold text-xl flex items-center justify-center">−</button>
+                                <span id="val-children" class="text-2xl font-black w-6 text-center">0</span>
+                                <button class="btn-child-plus w-10 h-10 rounded-full bg-slate-200 hover:bg-slate-300 font-bold text-xl flex items-center justify-center">+</button>
+                            </div>
+                        </div>
+
+                        <!-- Workers -->
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-bold text-xl">Working Adults</h3>
+                                <p class="text-sm text-slate-500">Earning income</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <button class="btn-worker-minus w-10 h-10 rounded-full bg-slate-200 hover:bg-slate-300 font-bold text-xl flex items-center justify-center">−</button>
+                                <span id="val-workers" class="text-2xl font-black w-6 text-center">1</span>
+                                <button class="btn-worker-plus w-10 h-10 rounded-full bg-slate-200 hover:bg-slate-300 font-bold text-xl flex items-center justify-center">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Representation -->
+                    <div class="bg-slate-50 rounded-2xl p-6 text-center border border-slate-200 shadow-inner min-h-[250px] flex flex-col justify-center">
+                        <h3 class="text-sm font-bold text-slate-400 tracking-widest mb-4">YOUR HOUSEHOLD</h3>
+                        <div id="household-emojis" class="text-6xl flex justify-center flex-wrap gap-2 mb-6 min-h-[80px]">
+                            <!-- Emojis injected via JS -->
+                        </div>
+                        <p id="household-desc" class="font-bold text-xl text-slate-700">1 Adult, 0 Children</p>
+                        <p id="household-workers-desc" class="text-slate-500 font-medium">1 Working Adult</p>
+                    </div>
+                </div>
+
+                <div class="mt-12 text-center">
+                    <button id="btn-see-wage" class="bg-orange-500 hover:bg-orange-600 text-white font-bold text-lg px-8 py-4 rounded-full shadow-lg transition-transform hover:-translate-y-1">
+                        SEE MY LIVING WAGE ➔
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: RESULTS -->
+        <section id="screen-3" class="game-screen w-full max-w-6xl mx-auto px-4 py-8">
+            <!-- Dynamic County Switcher Header -->
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">📍</span>
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 tracking-widest uppercase">CURRENT COUNTY</p>
+                        <select id="quick-county-select" class="text-xl font-black text-slate-800 bg-transparent border-none cursor-pointer focus:ring-0 p-0 hover:text-orange-500 transition-colors">
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4 md:mt-0 text-sm font-semibold bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+                    <span class="mr-1">ℹ️</span> <span class="tracking-wide">DEMO DATA</span>
+                </div>
+            </div>
+
+            <!-- Hero Number -->
+            <div class="text-center mb-12">
+                <h2 class="text-sm font-bold text-slate-500 tracking-widest mb-2">YOUR LIVING WAGE</h2>
+                <div class="text-7xl md:text-9xl font-black text-slate-800 tracking-tighter mb-4 animate-pulse-soft">
+                    $<span id="res-hourly">0.00</span><span class="text-3xl md:text-5xl text-slate-400">/HR</span>
+                </div>
+                <div class="flex flex-wrap justify-center gap-4 text-xl md:text-2xl font-bold text-slate-600">
+                    <span class="bg-white px-4 py-2 rounded-lg shadow-sm border border-slate-100">$<span id="res-annual">0</span> / YEAR</span>
+                    <span class="bg-white px-4 py-2 rounded-lg shadow-sm border border-slate-100">$<span id="res-monthly">0</span> / MO</span>
+                    <span class="bg-white px-4 py-2 rounded-lg shadow-sm border border-slate-100">$<span id="res-weekly">0</span> / WK</span>
+                </div>
+            </div>
+
+            <!-- Expense Cards -->
+            <div class="mb-12">
+                <h3 class="text-2xl font-black text-slate-800 mb-6 text-center">Where does the money go? (Monthly)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="expense-cards-container">
+                    <!-- Cards populated by JS -->
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button id="btn-survive" class="bg-teal-500 hover:bg-teal-600 text-white font-bold text-lg px-8 py-4 rounded-full shadow-lg transition-transform hover:-translate-y-1">
+                    CAN I SURVIVE MY BUDGET? ➔
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 4: WHAT-IF GAMEPLAY -->
+        <section id="screen-4" class="game-screen w-full max-w-6xl mx-auto px-4 py-8">
+            <div class="text-center mb-10">
+                <h2 class="text-sm font-bold text-slate-500 tracking-widest mb-2">STEP 4</h2>
+                <h1 class="text-4xl md:text-5xl font-black text-slate-800">Can You Make It?</h1>
+                <p class="text-lg text-slate-600 mt-4">Adjust the scenarios below to see how it affects your financial pressure.</p>
+            </div>
+
+            <!-- Paycheck Bar & Pressure -->
+            <div class="glass-card p-6 md:p-10 mb-10 overflow-hidden relative">
+                <!-- Bar Chart -->
+                <h3 class="font-bold text-xl mb-4 uppercase tracking-wider text-slate-700">YOUR MONTHLY INCOME (<span id="viz-income-text"></span>)</h3>
+                <div class="w-full h-12 bg-slate-200 rounded-full overflow-hidden flex shadow-inner mb-6" id="paycheck-bar">
+                    <!-- Segments generated by JS -->
+                </div>
+                
+                <!-- Pressure Meter -->
+                <div class="border-t border-slate-200 pt-6 mt-6">
+                    <div class="flex justify-between items-end mb-2">
+                        <h3 class="font-bold text-xl uppercase tracking-wider text-slate-700">FINANCIAL PRESSURE</h3>
+                        <div class="text-right">
+                            <span class="block text-sm text-slate-500 font-bold">MONEY LEFT OVER</span>
+                            <span class="text-3xl font-black" id="money-left-text">$0</span><span class="text-slate-400">/MO</span>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full h-6 bg-slate-200 rounded-full overflow-hidden shadow-inner mb-2 relative">
+                        <div id="pressure-fill" class="h-full w-full transition-all duration-500 bg-green-500"></div>
+                    </div>
+                    <p id="pressure-message" class="text-center font-bold text-lg text-slate-700 mt-2">...</p>
+                </div>
+            </div>
+
+            <!-- Scenarios -->
+            <h3 class="text-2xl font-black text-slate-800 mb-6">What Would You Do?</h3>
+            <div class="grid md:grid-cols-2 gap-6 mb-10">
+                <!-- Scenario 1: Earn More -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-3xl">💼</span>
+                        <h4 class="font-bold text-xl">Change Your Income</h4>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-6">What if you earned a different amount than the estimated living wage?</p>
+                    <div class="flex justify-between font-bold text-slate-700 mb-2">
+                        <span>$30,000</span>
+                        <span id="slider-income-val" class="text-orange-500">$75,000</span>
+                    </div>
+                    <input type="range" id="slider-income" min="30000" max="150000" step="1000" value="75000">
+                    <div class="mt-4 text-center">
+                        <button id="btn-reset-income" class="text-sm font-semibold text-blue-600 hover:underline">Reset to Living Wage</button>
+                    </div>
+                </div>
+
+                <!-- Scenario 2: Transportation -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-3xl">🚗</span>
+                        <h4 class="font-bold text-xl">Cut Transit Costs</h4>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-6">What if you took the bus, carpooled, or sold a car?</p>
+                    <div class="flex justify-between font-bold text-slate-700 mb-2">
+                        <span>$0</span>
+                        <span id="slider-transit-val" class="text-green-500">$500</span>
+                    </div>
+                    <input type="range" id="slider-transit" min="0" max="1500" step="50" value="500">
+                    <div class="mt-4 text-center">
+                        <button id="btn-reset-transit" class="text-sm font-semibold text-blue-600 hover:underline">Reset to Average Cost</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center flex flex-col md:flex-row justify-center gap-4">
+                <button id="btn-compare-options" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg px-8 py-4 rounded-full shadow-lg transition-transform hover:-translate-y-1">
+                    COMPARE OTHER COUNTIES ➔
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 5: COMPARE -->
+        <section id="screen-5" class="game-screen w-full max-w-5xl mx-auto px-4 py-8 pb-20">
+            <div class="text-center mb-10">
+                <h2 class="text-sm font-bold text-slate-500 tracking-widest mb-2">STEP 5</h2>
+                <h1 class="text-4xl md:text-5xl font-black text-slate-800">Compare Southern California</h1>
+                <p class="text-lg text-slate-600 mt-4">How does your county stack up for your exact household?</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden mb-10">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 text-sm uppercase tracking-wider">
+                                <th class="p-4 font-bold">County</th>
+                                <th class="p-4 font-bold">Hourly Wage</th>
+                                <th class="p-4 font-bold">Annual Wage</th>
+                                <th class="p-4 font-bold">Monthly Housing</th>
+                            </tr>
+                        </thead>
+                        <tbody id="compare-table-body" class="divide-y divide-slate-200">
+                            <!-- Rows populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-center items-center gap-4">
+                <button id="btn-share" class="bg-slate-800 hover:bg-black text-white font-bold text-lg px-8 py-4 rounded-full shadow-lg transition-transform hover:-translate-y-1 flex items-center gap-2">
+                    <span>📤</span> SHARE MY SCENARIO
+                </button>
+                <button class="btn-restart-game font-bold text-slate-500 hover:text-slate-800 px-6 py-4 transition-colors">
+                    Start Over
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal for Expense Details -->
+    <div id="expense-modal" class="modal-overlay fixed inset-0 z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 md:p-8 shadow-2xl relative transform transition-all">
+            <button id="btn-close-modal" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-bold text-slate-500">×</button>
+            <div id="modal-icon" class="text-5xl mb-4">🏠</div>
+            <h3 id="modal-title" class="text-3xl font-black mb-2 uppercase">Housing</h3>
+            <p id="modal-desc" class="text-slate-600 mb-6">Explanation goes here.</p>
+            
+            <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-slate-500">Monthly Cost</span>
+                    <span id="modal-monthly" class="font-black text-xl text-slate-800">$0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-slate-500">Annual Cost</span>
+                    <span id="modal-annual" class="font-black text-xl text-slate-800">$0</span>
+                </div>
+                <div class="flex justify-between items-center pt-3 border-t border-slate-200">
+                    <span class="font-bold text-slate-500">% of Income</span>
+                    <span id="modal-percent" class="font-black text-xl text-slate-800 px-3 py-1 rounded bg-slate-200">0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Modal for Share -->
+    <div id="alert-modal" class="modal-overlay fixed inset-0 z-[60] items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl">
+            <div class="text-5xl mb-4">✅</div>
+            <h3 class="text-2xl font-black mb-2">Copied!</h3>
+            <p class="text-slate-600 mb-6">Your scenario has been copied to the clipboard.</p>
+            <button id="btn-close-alert" class="bg-slate-800 text-white font-bold w-full py-3 rounded-xl hover:bg-black">Awesome</button>
+        </div>
+    </div>
+
+    <!-- Footer Disclaimer -->
+    <footer class="bg-slate-800 text-slate-400 text-xs py-6 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <p class="mb-2 uppercase tracking-widest font-bold text-slate-500">
+                <span class="inline-block bg-slate-700 text-white px-2 py-1 rounded mr-2">DEMO DATA</span>
+                Educational Prototype
+            </p>
+            <p class="max-w-3xl mx-auto">
+                This interactive experience uses generated demonstration values representing county-level living-wage estimates to illustrate basic costs a household may face in Southern California. Estimates are intended for educational purposes and are not personalized financial advice. Source data structure based on the MIT/Living Wage Institute Living Wage Calculator (2026 concept). <b>Source data must be verified and updated before public deployment.</b>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        /**
+         * SO CAL: MAKE ENDS MEET
+         * Main Game Logic
+         */
+
+        // 1. DATA STRUCTURE (DEMO DATA)
+        // This structure is designed to easily receive real MIT Living Wage data.
+        const COUNTIES = [
+            "Los Angeles County", "Orange County", "Riverside County", 
+            "San Bernardino County", "San Diego County", "Ventura County", 
+            "Imperial County", "Santa Barbara County", "Kern County", "San Luis Obispo County"
+        ];
+
+        // We explicitly define Orange County base data as requested.
+        const baseOrangeCountyData = {
+            "1adult_0children_1worker": {
+                hourly: 25.10, annual: 52208, childcare: 0, housing: 1800, taxes: 520, transportation: 800, food: 400, health: 300, other: 530
+            },
+            "1adult_1children_1worker": {
+                hourly: 45.20, annual: 94016, childcare: 1200, housing: 2400, taxes: 1100, transportation: 900, food: 600, health: 700, other: 934
+            },
+            "2adults_2children_1worker": {
+                hourly: 42.50, annual: 88400, childcare: 0, housing: 2800, taxes: 950, transportation: 1100, food: 1100, health: 800, other: 616
+            },
+            "2adults_2children_2workers": {
+                hourly: 32.10, annual: 133536, childcare: 2200, housing: 2800, taxes: 1800, transportation: 1600, food: 1100, health: 800, other: 828
+            }
+        };
+
+        // For the prototype, we auto-generate plausible demo data for EVERY combination to ensure 
+        // the game is fully playable without massive hardcoded blocks.
+        const livingWageData = {};
+
+        // Helper to generate a key
+        const getKey = (a, c, w) => `${a}adult${a>1?'s':''}_${c}children_${w}worker${w>1?'s':''}`;
+
+        // DEMO DATA GENERATOR
+        function generateDemoData() {
+            COUNTIES.forEach((county, idx) => {
+                livingWageData[county] = {};
+                // Cost multiplier based on arbitrary index to simulate different county expenses
+                // e.g. LA/OC/SD more expensive, Imperial/Kern cheaper
+                let costMod = 1.0;
+                if (["Los Angeles County", "Orange County", "San Diego County"].includes(county)) costMod = 1.2;
+                if (["Riverside County", "San Bernardino County", "Ventura County", "Santa Barbara County", "San Luis Obispo County"].includes(county)) costMod = 1.05;
+                if (["Imperial County", "Kern County"].includes(county)) costMod = 0.85;
+
+                // Loop every combination (Adults 1-2, Children 0-3)
+                for (let a = 1; a <= 2; a++) {
+                    for (let c = 0; c <= 3; c++) {
+                        for (let w = 1; w <= a; w++) {
+                            const key = getKey(a, c, w);
+                            
+                            // Base arbitrary calculations to simulate a budget
+                            let housing = (1200 * costMod) + (a > 1 ? 400 : 0) + (c * 300);
+                            let food = 350 + (a > 1 ? 250 : 0) + (c * 200);
+                            let trans = (w * 600) + ((a-w)*200) + (c * 50);
+                            let health = (a * 250) + (c * 200);
+                            // Childcare only if all adults are working and there are children
+                            let childcare = (w === a && c > 0) ? (c * 1000 * costMod) : 0;
+                            let other = 400 + (c * 100);
+                            
+                            let totalMonthlyNoTax = housing + food + trans + health + childcare + other;
+                            // Estimate taxes (approx 15-20%)
+                            let taxes = totalMonthlyNoTax * 0.18;
+                            
+                            let totalMonthly = totalMonthlyNoTax + taxes;
+                            let annual = totalMonthly * 12;
+                            let hourly = annual / (w * 2080); // Distributed over working adults
+
+                            // Override with specific OC data if it matches exactly, to respect the prompt's example
+                            if (county === "Orange County" && baseOrangeCountyData[key]) {
+                                livingWageData[county][key] = baseOrangeCountyData[key];
+                            } else {
+                                livingWageData[county][key] = {
+                                    hourly: hourly,
+                                    annual: annual,
+                                    childcare: childcare,
+                                    housing: housing,
+                                    taxes: taxes,
+                                    transportation: trans,
+                                    food: food,
+                                    health: health,
+                                    other: other
+                                };
+                            }
+                        }
+                    }
+                }
+            });
+            console.log("✅ DEMO DATA GENERATED", livingWageData);
+        }
+
+        // 2. GAME STATE
+        const gameState = {
+            step: 0,
+            county: "Orange County",
+            adults: 1,
+            children: 0,
+            workingAdults: 1,
+            
+            // Current selected data
+            currentData: null,
+            
+            // "What-if" overrides
+            customIncome: null,
+            customTransit: null
+        };
+
+        const EXPENSE_INFO = {
+            childcare: { name: "Childcare", icon: "🧸", color: "var(--c-childcare)", tailwind: "bg-purple-500", desc: "Estimated costs for childcare facilities or preschool. Note that if non-working adults are present in the household, this cost drops significantly." },
+            housing: { name: "Housing", icon: "🏠", color: "var(--c-housing)", tailwind: "bg-orange-500", desc: "Fair market rent estimates for apartments sized appropriately for your household, plus basic utilities." },
+            taxes: { name: "Taxes", icon: "🏛️", color: "var(--c-taxes)", tailwind: "bg-blue-500", desc: "Estimated federal, state, and local payroll taxes based on required income." },
+            transportation: { name: "Transportation", icon: "🚗", color: "var(--c-transportation)", tailwind: "bg-green-500", desc: "Costs associated with commuting, including gas, insurance, maintenance, or public transit passes." },
+            food: { name: "Food", icon: "🛒", color: "var(--c-food)", tailwind: "bg-yellow-500", desc: "A thrifty to moderate food plan based on USDA guidelines, assuming most meals are prepared at home." },
+            health: { name: "Health Care", icon: "⚕️", color: "var(--c-health)", tailwind: "bg-rose-500", desc: "Typical out-of-pocket health expenses and employer-sponsored insurance premiums." }
+        };
+
+        // 3. UI CONTROLLERS
+        function initGame() {
+            generateDemoData();
+            setupEventListeners();
+            buildCountyGrid();
+            populateQuickSelect();
+            updateHouseholdView();
+            goToStep(0);
+        }
+
+        function setupEventListeners() {
+            // Navigation
+            document.getElementById('btn-start').addEventListener('click', () => goToStep(1));
+            document.getElementById('btn-see-wage').addEventListener('click', () => { calculateData(); goToStep(3); });
+            document.getElementById('btn-survive').addEventListener('click', () => { resetSliders(); updatePaycheckVisual(); goToStep(4); });
+            document.getElementById('btn-compare-options').addEventListener('click', () => { renderCompareTable(); goToStep(5); });
+            
+            // Resets
+            document.getElementById('btn-reset').addEventListener('click', resetGame);
+            document.querySelectorAll('.btn-restart-game').forEach(b => b.addEventListener('click', resetGame));
+            
+            // Household Builder
+            document.querySelector('.btn-adult-minus').addEventListener('click', () => modifyHousehold('adults', -1));
+            document.querySelector('.btn-adult-plus').addEventListener('click', () => modifyHousehold('adults', 1));
+            document.querySelector('.btn-child-minus').addEventListener('click', () => modifyHousehold('children', -1));
+            document.querySelector('.btn-child-plus').addEventListener('click', () => modifyHousehold('children', 1));
+            document.querySelector('.btn-worker-minus').addEventListener('click', () => modifyHousehold('workers', -1));
+            document.querySelector('.btn-worker-plus').addEventListener('click', () => modifyHousehold('workers', 1));
+
+            // Modals
+            document.getElementById('btn-close-modal').addEventListener('click', () => {
+                document.getElementById('expense-modal').classList.remove('active');
+            });
+            document.getElementById('btn-close-alert').addEventListener('click', () => {
+                document.getElementById('alert-modal').classList.remove('active');
+            });
+
+            // Sliders
+            document.getElementById('slider-income').addEventListener('input', (e) => {
+                gameState.customIncome = parseInt(e.target.value);
+                document.getElementById('slider-income-val').innerText = formatMoney(gameState.customIncome);
+                updatePaycheckVisual();
+            });
+            document.getElementById('slider-transit').addEventListener('input', (e) => {
+                gameState.customTransit = parseInt(e.target.value);
+                document.getElementById('slider-transit-val').innerText = formatMoney(gameState.customTransit) + "/mo";
+                updatePaycheckVisual();
+            });
+            document.getElementById('btn-reset-income').addEventListener('click', () => {
+                gameState.customIncome = gameState.currentData.annual;
+                document.getElementById('slider-income').value = gameState.customIncome;
+                document.getElementById('slider-income-val').innerText = formatMoney(gameState.customIncome);
+                updatePaycheckVisual();
+            });
+            document.getElementById('btn-reset-transit').addEventListener('click', () => {
+                gameState.customTransit = gameState.currentData.transportation;
+                document.getElementById('slider-transit').value = gameState.customTransit;
+                document.getElementById('slider-transit-val').innerText = formatMoney(gameState.customTransit) + "/mo";
+                updatePaycheckVisual();
+            });
+
+            // Quick County Select
+            document.getElementById('quick-county-select').addEventListener('change', (e) => {
+                gameState.county = e.target.value;
+                calculateData();
+            });
+
+            // Share
+            document.getElementById('btn-share').addEventListener('click', shareScenario);
+        }
+
+        function goToStep(step) {
+            gameState.step = step;
+            
+            // Toggle Header visibility
+            if (step === 0) {
+                document.getElementById('game-header').classList.add('hidden');
+            } else {
+                document.getElementById('game-header').classList.remove('hidden');
+            }
+
+            // Hide all screens
+            document.querySelectorAll('.game-screen').forEach(s => {
+                s.classList.remove('active');
+            });
+            
+            // Show target screen
+            const targetScreen = document.getElementById(`screen-${step}`);
+            if (targetScreen) targetScreen.classList.add('active');
+
+            // Update Progress Bar
+            for(let i=1; i<=5; i++) {
+                const dot = document.getElementById(`prog-dot-${i}`);
+                const line = document.getElementById(`prog-line-${i}`);
+                if(dot) {
+                    if(i <= step) dot.classList.add('active', 'bg-orange-500');
+                    else dot.classList.remove('active', 'bg-orange-500');
+                }
+                if(line) {
+                    if(i < step) line.classList.add('active', 'bg-orange-500');
+                    else line.classList.remove('active', 'bg-orange-500');
+                }
+            }
+        }
+
+        function resetGame() {
+            gameState.county = "Orange County";
+            gameState.adults = 1;
+            gameState.children = 0;
+            gameState.workingAdults = 1;
+            updateHouseholdView();
+            goToStep(0);
+        }
+
+        function buildCountyGrid() {
+            const grid = document.getElementById('county-grid');
+            grid.innerHTML = '';
+            COUNTIES.forEach(county => {
+                const isSelected = gameState.county === county;
+                const div = document.createElement('div');
+                div.className = `glass-card interactive-card p-6 text-center cursor-pointer border-2 ${isSelected ? 'border-orange-500 bg-orange-50' : 'border-transparent'}`;
+                div.innerHTML = `
+                    <div class="text-4xl mb-3">📍</div>
+                    <h3 class="font-bold text-slate-700">${county.replace(' County', '')}</h3>
+                `;
+                div.onclick = () => {
+                    gameState.county = county;
+                    goToStep(2);
+                };
+                grid.appendChild(div);
+            });
+        }
+
+        function populateQuickSelect() {
+            const sel = document.getElementById('quick-county-select');
+            sel.innerHTML = '';
+            COUNTIES.forEach(county => {
+                const opt = document.createElement('option');
+                opt.value = county;
+                opt.innerText = county;
+                if(gameState.county === county) opt.selected = true;
+                sel.appendChild(opt);
+            });
+        }
+
+        function modifyHousehold(type, change) {
+            if (type === 'adults') {
+                gameState.adults += change;
+                if(gameState.adults < 1) gameState.adults = 1;
+                if(gameState.adults > 2) gameState.adults = 2;
+                // rule: workers cannot exceed adults
+                if(gameState.workingAdults > gameState.adults) gameState.workingAdults = gameState.adults;
+            } else if (type === 'children') {
+                gameState.children += change;
+                if(gameState.children < 0) gameState.children = 0;
+                if(gameState.children > 3) gameState.children = 3;
+            } else if (type === 'workers') {
+                gameState.workingAdults += change;
+                if(gameState.workingAdults < 1) gameState.workingAdults = 1;
+                if(gameState.workingAdults > gameState.adults) gameState.workingAdults = gameState.adults;
+            }
+            updateHouseholdView();
+        }
+
+        function updateHouseholdView() {
+            document.getElementById('val-adults').innerText = gameState.adults;
+            document.getElementById('val-children').innerText = gameState.children;
+            document.getElementById('val-workers').innerText = gameState.workingAdults;
+
+            const emojiContainer = document.getElementById('household-emojis');
+            let emojis = '';
+            for(let i=0; i<gameState.adults; i++) emojis += '👩 ';
+            for(let i=0; i<gameState.children; i++) emojis += '👧 ';
+            emojiContainer.innerHTML = emojis;
+
+            let aStr = gameState.adults === 1 ? "1 Adult" : "2 Adults";
+            let cStr = gameState.children === 1 ? "1 Child" : `${gameState.children} Children`;
+            document.getElementById('household-desc').innerText = `${aStr}, ${cStr}`;
+            
+            let wStr = gameState.workingAdults === 1 ? "1 Working Adult" : "2 Working Adults";
+            document.getElementById('household-workers-desc').innerText = wStr;
+        }
+
+        function calculateData() {
+            // Set select value just in case
+            document.getElementById('quick-county-select').value = gameState.county;
+
+            const key = getKey(gameState.adults, gameState.children, gameState.workingAdults);
+            if (!livingWageData[gameState.county] || !livingWageData[gameState.county][key]) {
+                console.error("Missing data for", gameState.county, key);
+                return;
+            }
+            
+            gameState.currentData = Object.assign({}, livingWageData[gameState.county][key]);
+            // Re-calc monthly from annual for exactness
+            gameState.currentData.monthly = gameState.currentData.annual / 12;
+
+            renderResults();
+        }
+
+        function renderResults() {
+            const data = gameState.currentData;
+            
+            // Animate Numbers
+            animateValue("res-hourly", 0, data.hourly, 800, true);
+            animateValue("res-annual", 0, data.annual, 800);
+            animateValue("res-monthly", 0, data.monthly, 800);
+            animateValue("res-weekly", 0, data.annual/52, 800);
+
+            // Render Cards
+            const container = document.getElementById('expense-cards-container');
+            container.innerHTML = '';
+
+            const keys = ['housing', 'childcare', 'food', 'transportation', 'health', 'taxes'];
+            keys.forEach((k, idx) => {
+                const amount = data[k];
+                const pct = Math.round((amount / data.monthly) * 100) || 0;
+                const info = EXPENSE_INFO[k];
+                
+                const delay = idx * 100;
+
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-2xl border border-slate-200 shadow-sm interactive-card flex flex-col justify-between";
+                card.style.animation = `fadeIn 0.5s ease forwards ${delay}ms`;
+                card.style.opacity = 0;
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="text-4xl p-3 rounded-xl bg-slate-50">${info.icon}</div>
+                        <span class="text-xs font-bold px-2 py-1 rounded bg-slate-100 text-slate-500">${pct}% of Income</span>
+                    </div>
+                    <div>
+                        <h4 class="font-black text-xl text-slate-800 uppercase tracking-wide">${info.name}</h4>
+                        <p class="text-3xl font-bold text-slate-600 mt-2">$${Math.round(amount).toLocaleString()}<span class="text-lg text-slate-400 font-medium">/mo</span></p>
+                    </div>
+                `;
+
+                card.onclick = () => showExpenseModal(k, amount, pct, data.annual);
+                container.appendChild(card);
+            });
+        }
+
+        function resetSliders() {
+            gameState.customIncome = gameState.currentData.annual;
+            gameState.customTransit = gameState.currentData.transportation;
+            
+            const incSlider = document.getElementById('slider-income');
+            incSlider.value = gameState.customIncome;
+            document.getElementById('slider-income-val').innerText = formatMoney(gameState.customIncome);
+            
+            const transSlider = document.getElementById('slider-transit');
+            transSlider.value = gameState.customTransit;
+            document.getElementById('slider-transit-val').innerText = formatMoney(gameState.customTransit) + "/mo";
+        }
+
+        function updatePaycheckVisual() {
+            const data = gameState.currentData;
+            const customMonthlyIncome = gameState.customIncome / 12;
+            
+            // Compute Expenses
+            let trans = gameState.customTransit;
+            let otherFixed = data.housing + data.childcare + data.food + data.health + data.other + data.taxes;
+            let totalExpenses = otherFixed + trans;
+            
+            let moneyLeft = customMonthlyIncome - totalExpenses;
+
+            document.getElementById('viz-income-text').innerText = formatMoney(customMonthlyIncome) + "/MO";
+            
+            // Build Stacked Bar
+            const bar = document.getElementById('paycheck-bar');
+            bar.innerHTML = '';
+            
+            const exps = [
+                {k: 'housing', v: data.housing},
+                {k: 'taxes', v: data.taxes},
+                {k: 'childcare', v: data.childcare},
+                {k: 'transportation', v: trans},
+                {k: 'food', v: data.food},
+                {k: 'health', v: data.health}
+            ];
+
+            let cumulativePct = 0;
+            exps.forEach(exp => {
+                if(exp.v <= 0) return;
+                let pct = (exp.v / customMonthlyIncome) * 100;
+                
+                // Cap visual width to prevent overflowing if expenses > income
+                let visualPct = pct;
+                if (cumulativePct + visualPct > 100) visualPct = 100 - cumulativePct;
+                if (visualPct <= 0) return;
+                
+                cumulativePct += visualPct;
+
+                const div = document.createElement('div');
+                div.className = `h-full ${EXPENSE_INFO[exp.k].tailwind} transition-all duration-500`;
+                div.style.width = `${visualPct}%`;
+                div.title = `${EXPENSE_INFO[exp.k].name}: ${formatMoney(exp.v)}/mo`;
+                bar.appendChild(div);
+            });
+
+            // If money left over, show as blank space (it's implicit since bar bg is gray).
+            
+            // Update Pressure Meter
+            document.getElementById('money-left-text').innerText = (moneyLeft < 0 ? "-$" : "$") + Math.abs(Math.round(moneyLeft)).toLocaleString();
+            
+            const fill = document.getElementById('pressure-fill');
+            const msg = document.getElementById('pressure-message');
+            
+            // Logic for pressure
+            // If expenses >= income (moneyLeft <= 0) -> 100% pressure (RED)
+            // If moneyLeft > 20% of expenses -> Low pressure (GREEN)
+            let pressurePct = (totalExpenses / customMonthlyIncome) * 100;
+            if (pressurePct > 100) pressurePct = 100;
+
+            fill.style.width = `${pressurePct}%`;
+
+            if (moneyLeft >= totalExpenses * 0.2) {
+                fill.className = "h-full transition-all duration-500 bg-green-500";
+                msg.innerText = "🟢 YOU'RE IN GOOD SHAPE. You have a comfortable buffer.";
+                msg.className = "text-center font-bold text-lg mt-2 text-green-600";
+            } else if (moneyLeft >= 0) {
+                fill.className = "h-full transition-all duration-500 bg-yellow-400";
+                msg.innerText = "🟡 IT'S A LITTLE TIGHT. You're covering basics, but saving is hard.";
+                msg.className = "text-center font-bold text-lg mt-2 text-yellow-600";
+            } else if (moneyLeft >= -totalExpenses * 0.1) {
+                fill.className = "h-full transition-all duration-500 bg-orange-500";
+                msg.innerText = "🟠 FINANCES ARE STRETCHED. You are falling slightly behind every month.";
+                msg.className = "text-center font-bold text-lg mt-2 text-orange-600";
+            } else {
+                fill.className = "h-full transition-all duration-500 bg-red-600";
+                msg.innerText = "🔴 DANGER ZONE. Basic expenses exceed income significantly.";
+                msg.className = "text-center font-bold text-lg mt-2 text-red-600";
+            }
+        }
+
+        function renderCompareTable() {
+            const tbody = document.getElementById('compare-table-body');
+            tbody.innerHTML = '';
+            
+            const key = getKey(gameState.adults, gameState.children, gameState.workingAdults);
+            
+            // Create array to sort
+            let arr = COUNTIES.map(c => {
+                let d = livingWageData[c][key];
+                return { county: c, hourly: d.hourly, annual: d.annual, housing: d.housing };
+            });
+            
+            // Sort lowest to highest wage
+            arr.sort((a,b) => a.annual - b.annual);
+
+            arr.forEach(item => {
+                const isMe = item.county === gameState.county;
+                const tr = document.createElement('tr');
+                if(isMe) tr.className = "bg-orange-50 font-bold border-l-4 border-orange-500";
+                
+                tr.innerHTML = `
+                    <td class="p-4">${item.county} ${isMe ? ' <span class="text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded ml-2">YOU</span>' : ''}</td>
+                    <td class="p-4">$${item.hourly.toFixed(2)}</td>
+                    <td class="p-4">$${Math.round(item.annual).toLocaleString()}</td>
+                    <td class="p-4">$${Math.round(item.housing).toLocaleString()}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function showExpenseModal(key, monthlyAmt, pct, annualIncome) {
+            const info = EXPENSE_INFO[key];
+            document.getElementById('modal-icon').innerText = info.icon;
+            document.getElementById('modal-title').innerText = info.name;
+            document.getElementById('modal-title').style.color = info.color;
+            document.getElementById('modal-desc').innerText = info.desc;
+            
+            document.getElementById('modal-monthly').innerText = formatMoney(monthlyAmt);
+            document.getElementById('modal-annual').innerText = formatMoney(monthlyAmt * 12);
+            document.getElementById('modal-percent').innerText = `${pct}%`;
+            
+            document.getElementById('expense-modal').classList.add('active');
+        }
+
+        function shareScenario() {
+            const data = gameState.currentData;
+            const text = `My SoCal Living Wage Scenario:\n📍 ${gameState.county}\n👥 ${gameState.adults} Adults, ${gameState.children} Children, ${gameState.workingAdults} Working\n💵 Living Wage: $${data.hourly.toFixed(2)}/hour\n💰 Annual Req: $${Math.round(data.annual).toLocaleString()}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                document.getElementById('alert-modal').classList.add('active');
+            }).catch(err => {
+                // Fallback for iframe restrictions
+                try {
+                    const temp = document.createElement("textarea");
+                    temp.value = text;
+                    document.body.appendChild(temp);
+                    temp.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(temp);
+                    document.getElementById('alert-modal').classList.add('active');
+                } catch(e) {
+                    alert("Here is your scenario to copy:\n\n" + text);
+                }
+            });
+        }
+
+        // --- Helpers ---
+        function formatMoney(num) {
+            return "$" + Math.round(num).toLocaleString();
+        }
+
+        function animateValue(id, start, end, duration, isFloat = false) {
+            const obj = document.getElementById(id);
+            if(!obj) return;
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                // Ease out cubic
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                let current = start + easeOut * (end - start);
+                
+                if(isFloat) obj.innerHTML = current.toFixed(2);
+                else obj.innerHTML = Math.round(current).toLocaleString();
+                
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    if(isFloat) obj.innerHTML = end.toFixed(2);
+                    else obj.innerHTML = Math.round(end).toLocaleString();
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Bootstrap the app
+        window.onload = () => {
+            initGame();
+        };
+    </script>
+</body>
+</html>
