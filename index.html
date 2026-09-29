@@ -1,9 +1,9 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SO CAL: MAKE ENDS MEET</title>
+    <title>SoCal Living-Wage Game</title>
     
     <!-- Tailwind CSS for Responsive Layout & Utility Classes -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -156,8 +156,8 @@
         <div class="max-w-6xl mx-auto px-3 py-2 md:py-3 flex flex-row justify-between items-center gap-2">
             <div class="font-black text-sm md:text-xl tracking-tight text-slate-800 flex items-center gap-1 md:gap-2 whitespace-nowrap w-auto">
                 <span class="text-xl md:text-2xl">🌅</span> 
-                <span class="text-sunset hidden sm:inline-block">SO CAL: MAKE ENDS MEET</span>
-                <span class="text-sunset sm:hidden inline-block">SO CAL</span>
+                <span class="text-sunset hidden sm:inline-block">SoCal Living-Wage Game</span>
+                <span class="text-sunset sm:hidden inline-block">SoCal Game</span>
             </div>
             
             <!-- Progress Bar -->
@@ -190,7 +190,7 @@
             <div class="z-10 text-center max-w-2xl px-4 md:px-6 w-full mt-[-5dvh]">
                 <div class="inline-block bg-white/20 backdrop-blur-md px-3 py-1 md:px-4 md:py-1 rounded-full text-white text-xs md:text-sm font-bold tracking-widest mb-4 md:mb-6">EDUCATIONAL PROTOTYPE</div>
                 <h1 class="text-5xl sm:text-6xl md:text-8xl font-black text-white leading-tight mb-3 md:mb-4 drop-shadow-lg">
-                    SO CAL:<br>MAKE ENDS MEET
+                    SoCal<br>Living-Wage Game
                 </h1>
                 <p class="text-lg sm:text-xl md:text-2xl text-white/90 font-medium mb-8 md:mb-12 drop-shadow px-2">
                     How much does it <i>really</i> cost to live in Southern California?<br class="hidden md:block">
@@ -448,12 +448,9 @@
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-3 md:gap-4 pb-10 w-full">
-                <button id="btn-share" class="w-full sm:w-auto bg-slate-800 hover:bg-black active:bg-slate-900 text-white font-bold text-base md:text-lg px-8 py-4 rounded-full shadow-lg transition-transform hover:-translate-y-1 flex items-center justify-center gap-2">
-                    <span>📤</span> SHARE MY SCENARIO
-                </button>
-                <button class="btn-restart-game w-full sm:w-auto font-bold text-slate-500 hover:text-slate-800 px-6 py-4 transition-colors">
-                    Start Over
+            <div class="flex flex-col justify-center items-center gap-3 md:gap-4 pb-10 w-full">
+                <button class="btn-restart-game w-full sm:w-auto bg-slate-800 hover:bg-black active:bg-slate-900 text-white font-bold text-base md:text-lg px-12 py-4 rounded-full shadow-lg transition-transform hover:-translate-y-1">
+                    START OVER
                 </button>
             </div>
         </section>
@@ -482,16 +479,6 @@
                     <span id="modal-percent" class="font-black text-lg md:text-xl text-slate-800 px-3 py-1 rounded bg-slate-200">0%</span>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Alert Modal for Share -->
-    <div id="alert-modal" class="modal-overlay fixed inset-0 z-[60] items-center justify-center p-4">
-        <div class="modal-content bg-white rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl">
-            <div class="text-5xl mb-4">✅</div>
-            <h3 class="text-2xl font-black mb-2">Copied!</h3>
-            <p class="text-slate-600 mb-6">Your scenario has been copied to the clipboard.</p>
-            <button id="btn-close-alert" class="bg-slate-800 text-white font-bold w-full py-4 rounded-xl hover:bg-black active:scale-95 transition-transform">Awesome</button>
         </div>
     </div>
 
@@ -609,26 +596,35 @@
         }
 
         function setupEventListeners() {
-            document.getElementById('btn-start').addEventListener('click', () => goToStep(1));
-            document.getElementById('btn-see-wage').addEventListener('click', () => { calculateData(); goToStep(3); });
-            document.getElementById('btn-survive').addEventListener('click', () => { resetSliders(); updatePaycheckVisual(); goToStep(4); });
-            document.getElementById('btn-compare-options').addEventListener('click', () => { renderCompareTable(); goToStep(5); });
+            const safeAdd = (id, evt, fn) => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener(evt, fn);
+            };
+
+            safeAdd('btn-start', 'click', () => goToStep(1));
+            safeAdd('btn-see-wage', 'click', () => { calculateData(); goToStep(3); });
+            safeAdd('btn-survive', 'click', () => { resetSliders(); updatePaycheckVisual(); goToStep(4); });
+            safeAdd('btn-compare-options', 'click', () => { renderCompareTable(); goToStep(5); });
+            safeAdd('btn-reset', 'click', resetGame);
             
-            document.getElementById('btn-reset').addEventListener('click', resetGame);
             document.querySelectorAll('.btn-restart-game').forEach(b => b.addEventListener('click', resetGame));
             
-            document.querySelector('.btn-adult-minus').addEventListener('click', () => modifyHousehold('adults', -1));
-            document.querySelector('.btn-adult-plus').addEventListener('click', () => modifyHousehold('adults', 1));
-            document.querySelector('.btn-child-minus').addEventListener('click', () => modifyHousehold('children', -1));
-            document.querySelector('.btn-child-plus').addEventListener('click', () => modifyHousehold('children', 1));
-            document.querySelector('.btn-worker-minus').addEventListener('click', () => modifyHousehold('workers', -1));
-            document.querySelector('.btn-worker-plus').addEventListener('click', () => modifyHousehold('workers', 1));
+            const btnAdultMinus = document.querySelector('.btn-adult-minus');
+            if (btnAdultMinus) btnAdultMinus.addEventListener('click', () => modifyHousehold('adults', -1));
+            const btnAdultPlus = document.querySelector('.btn-adult-plus');
+            if (btnAdultPlus) btnAdultPlus.addEventListener('click', () => modifyHousehold('adults', 1));
+            const btnChildMinus = document.querySelector('.btn-child-minus');
+            if (btnChildMinus) btnChildMinus.addEventListener('click', () => modifyHousehold('children', -1));
+            const btnChildPlus = document.querySelector('.btn-child-plus');
+            if (btnChildPlus) btnChildPlus.addEventListener('click', () => modifyHousehold('children', 1));
+            const btnWorkerMinus = document.querySelector('.btn-worker-minus');
+            if (btnWorkerMinus) btnWorkerMinus.addEventListener('click', () => modifyHousehold('workers', -1));
+            const btnWorkerPlus = document.querySelector('.btn-worker-plus');
+            if (btnWorkerPlus) btnWorkerPlus.addEventListener('click', () => modifyHousehold('workers', 1));
 
-            document.getElementById('btn-close-modal').addEventListener('click', () => {
-                document.getElementById('expense-modal').classList.remove('active');
-            });
-            document.getElementById('btn-close-alert').addEventListener('click', () => {
-                document.getElementById('alert-modal').classList.remove('active');
+            safeAdd('btn-close-modal', 'click', () => {
+                const modal = document.getElementById('expense-modal');
+                if (modal) modal.classList.remove('active');
             });
 
             // Prevent modal close button from propagating if clicking inside modal content
@@ -642,35 +638,44 @@
                 });
             });
 
-            document.getElementById('slider-income').addEventListener('input', (e) => {
+            safeAdd('slider-income', 'input', (e) => {
                 gameState.customIncome = parseInt(e.target.value);
-                document.getElementById('slider-income-val').innerText = formatMoney(gameState.customIncome);
-                updatePaycheckVisual();
-            });
-            document.getElementById('slider-transit').addEventListener('input', (e) => {
-                gameState.customTransit = parseInt(e.target.value);
-                document.getElementById('slider-transit-val').innerText = formatMoney(gameState.customTransit) + "/mo";
-                updatePaycheckVisual();
-            });
-            document.getElementById('btn-reset-income').addEventListener('click', () => {
-                gameState.customIncome = gameState.currentData.annual;
-                document.getElementById('slider-income').value = gameState.customIncome;
-                document.getElementById('slider-income-val').innerText = formatMoney(gameState.customIncome);
-                updatePaycheckVisual();
-            });
-            document.getElementById('btn-reset-transit').addEventListener('click', () => {
-                gameState.customTransit = gameState.currentData.transportation;
-                document.getElementById('slider-transit').value = gameState.customTransit;
-                document.getElementById('slider-transit-val').innerText = formatMoney(gameState.customTransit) + "/mo";
+                const sliderVal = document.getElementById('slider-income-val');
+                if (sliderVal) sliderVal.innerText = formatMoney(gameState.customIncome);
                 updatePaycheckVisual();
             });
 
-            document.getElementById('quick-county-select').addEventListener('change', (e) => {
+            safeAdd('slider-transit', 'input', (e) => {
+                gameState.customTransit = parseInt(e.target.value);
+                const transitVal = document.getElementById('slider-transit-val');
+                if (transitVal) transitVal.innerText = formatMoney(gameState.customTransit) + "/mo";
+                updatePaycheckVisual();
+            });
+
+            safeAdd('btn-reset-income', 'click', () => {
+                if (!gameState.currentData) return;
+                gameState.customIncome = gameState.currentData.annual;
+                const slider = document.getElementById('slider-income');
+                if (slider) slider.value = gameState.customIncome;
+                const sliderVal = document.getElementById('slider-income-val');
+                if (sliderVal) sliderVal.innerText = formatMoney(gameState.customIncome);
+                updatePaycheckVisual();
+            });
+
+            safeAdd('btn-reset-transit', 'click', () => {
+                if (!gameState.currentData) return;
+                gameState.customTransit = gameState.currentData.transportation;
+                const slider = document.getElementById('slider-transit');
+                if (slider) slider.value = gameState.customTransit;
+                const transitVal = document.getElementById('slider-transit-val');
+                if (transitVal) transitVal.innerText = formatMoney(gameState.customTransit) + "/mo";
+                updatePaycheckVisual();
+            });
+
+            safeAdd('quick-county-select', 'change', (e) => {
                 gameState.county = e.target.value;
                 calculateData();
             });
-
-            document.getElementById('btn-share').addEventListener('click', shareScenario);
         }
 
         function goToStep(step) {
@@ -824,18 +829,22 @@
                 const delay = idx * 100;
 
                 const card = document.createElement('div');
-                card.className = "bg-white p-5 rounded-2xl border border-slate-200 shadow-sm interactive-card flex flex-col justify-between";
+                card.className = "bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-sm interactive-card flex flex-col justify-between cursor-pointer group hover:border-orange-400 transition-all relative overflow-hidden";
                 card.style.animation = `fadeIn 0.5s ease forwards ${delay}ms`;
                 card.style.opacity = 0;
                 
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-3 md:mb-4">
-                        <div class="text-3xl md:text-4xl p-2 md:p-3 rounded-xl bg-slate-50">${info.icon}</div>
-                        <span class="text-[10px] md:text-xs font-bold px-2 py-1 rounded bg-slate-100 text-slate-500">${pct}% of Income</span>
+                        <div class="text-3xl md:text-4xl p-2 md:p-3 rounded-xl bg-slate-50 group-hover:scale-110 transition-transform">${info.icon}</div>
+                        <span class="text-xs md:text-sm font-black px-3 py-1.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200 shadow-sm shadow-blue-100">${pct}% of Income</span>
                     </div>
                     <div>
                         <h4 class="font-black text-lg md:text-xl text-slate-800 uppercase tracking-wide">${info.name}</h4>
                         <p class="text-2xl md:text-3xl font-bold text-slate-600 mt-1 md:mt-2">$${Math.round(amount).toLocaleString()}<span class="text-sm md:text-lg text-slate-400 font-medium">/mo</span></p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-orange-500 font-bold text-xs md:text-sm opacity-70 group-hover:opacity-100 transition-opacity">
+                        <span>See Details</span>
+                        <span class="text-lg">→</span>
                     </div>
                 `;
 
@@ -968,27 +977,6 @@
             document.getElementById('modal-percent').innerText = `${pct}%`;
             
             document.getElementById('expense-modal').classList.add('active');
-        }
-
-        function shareScenario() {
-            const data = gameState.currentData;
-            const text = `My SoCal Living Wage Scenario:\n📍 ${gameState.county}\n👥 ${gameState.adults} Adults, ${gameState.children} Children, ${gameState.workingAdults} Working\n💵 Living Wage: $${data.hourly.toFixed(2)}/hour\n💰 Annual Req: $${Math.round(data.annual).toLocaleString()}`;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                document.getElementById('alert-modal').classList.add('active');
-            }).catch(err => {
-                try {
-                    const temp = document.createElement("textarea");
-                    temp.value = text;
-                    document.body.appendChild(temp);
-                    temp.select();
-                    document.execCommand("copy");
-                    document.body.removeChild(temp);
-                    document.getElementById('alert-modal').classList.add('active');
-                } catch(e) {
-                    alert("Here is your scenario to copy:\n\n" + text);
-                }
-            });
         }
 
         function formatMoney(num) {
