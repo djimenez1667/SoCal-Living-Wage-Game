@@ -599,6 +599,10 @@
         </div>
     </footer>
 
+    <!-- Tooltip for Paycheck Bar -->
+    <div id="bar-tooltip" class="fixed opacity-0 scale-95 transition-all duration-200 bg-slate-800 text-white text-xs md:text-sm font-bold px-3 py-2 rounded-lg shadow-xl pointer-events-none z-50 transform -translate-x-1/2 -translate-y-full whitespace-nowrap hidden">
+    </div>
+
     <script>
         /**
          * SO CAL LIVING-WAGE GAME
@@ -845,6 +849,10 @@
             gameState.children = 0;
             gameState.workingAdults = 1;
             
+            gameState.userBudget = {
+                income: 0, housing: 0, food: 0, transportation: 0, health: 0, childcare: 0, taxes: 0
+            };
+            
             ['income', 'housing', 'food', 'transportation', 'health', 'childcare', 'taxes'].forEach(id => {
                 const el = document.getElementById('user-input-' + id);
                 if(el) el.value = '';
@@ -1035,26 +1043,48 @@
         }
 
         function resetSliders() {
-            gameState.customIncome = gameState.currentData.annual;
-            gameState.customTransit = gameState.currentData.transportation;
+            const hasUserBudget = gameState.userBudget.income > 0;
+            
+            gameState.customIncome = hasUserBudget ? (gameState.userBudget.income * 12) : gameState.currentData.annual;
+            gameState.customTransit = hasUserBudget ? gameState.userBudget.transportation : gameState.currentData.transportation;
             
             const incSlider = document.getElementById('slider-income');
-            if(incSlider) incSlider.value = gameState.customIncome;
+            if(incSlider) {
+                if(gameState.customIncome > parseInt(incSlider.max)) incSlider.max = gameState.customIncome + 50000;
+                incSlider.value = gameState.customIncome;
+            }
             const incVal = document.getElementById('slider-income-val');
             if(incVal) incVal.innerText = formatMoney(gameState.customIncome);
             
             const transSlider = document.getElementById('slider-transit');
-            if(transSlider) transSlider.value = gameState.customTransit;
+            if(transSlider) {
+                if(gameState.customTransit > parseInt(transSlider.max)) transSlider.max = gameState.customTransit + 500;
+                transSlider.value = gameState.customTransit;
+            }
             const transVal = document.getElementById('slider-transit-val');
             if(transVal) transVal.innerText = formatMoney(gameState.customTransit) + "/mo";
+            
+            const btnResetIncome = document.getElementById('btn-reset-income');
+            if(btnResetIncome) btnResetIncome.innerText = hasUserBudget ? "Reset to My Budget" : "Reset to Living Wage";
+            
+            const btnResetTransit = document.getElementById('btn-reset-transit');
+            if(btnResetTransit) btnResetTransit.innerText = hasUserBudget ? "Reset to My Budget" : "Reset to Average Cost";
         }
 
         function updatePaycheckVisual() {
             const data = gameState.currentData;
             const customMonthlyIncome = gameState.customIncome / 12;
             
+            const hasUserBudget = gameState.userBudget.income > 0 || gameState.userBudget.housing > 0;
+            
+            let bHousing = hasUserBudget ? (gameState.userBudget.housing || 0) : data.housing;
+            let bTaxes = hasUserBudget ? (gameState.userBudget.taxes || 0) : data.taxes;
+            let bChildcare = hasUserBudget ? (gameState.userBudget.childcare || 0) : data.childcare;
+            let bFood = hasUserBudget ? (gameState.userBudget.food || 0) : data.food;
+            let bHealth = hasUserBudget ? (gameState.userBudget.health || 0) : data.health;
+            
             let trans = gameState.customTransit;
-            let otherFixed = data.housing + data.childcare + data.food + data.health + data.other + data.taxes;
+            let otherFixed = bHousing + bChildcare + bFood + bHealth + bTaxes;
             let totalExpenses = otherFixed + trans;
             let moneyLeft = customMonthlyIncome - totalExpenses;
 
@@ -1064,12 +1094,12 @@
             bar.innerHTML = '';
             
             const exps = [
-                {k: 'housing', v: data.housing},
-                {k: 'taxes', v: data.taxes},
-                {k: 'childcare', v: data.childcare},
+                {k: 'housing', v: bHousing},
+                {k: 'taxes', v: bTaxes},
+                {k: 'childcare', v: bChildcare},
                 {k: 'transportation', v: trans},
-                {k: 'food', v: data.food},
-                {k: 'health', v: data.health}
+                {k: 'food', v: bFood},
+                {k: 'health', v: bHealth}
             ];
 
             let cumulativePct = 0;
@@ -1082,9 +1112,25 @@
                 cumulativePct += visualPct;
 
                 const div = document.createElement('div');
-                div.className = `h-full border-r border-white/20 ${EXPENSE_INFO[exp.k].tailwind} transition-all duration-500`;
+                div.className = `h-full border-r border-white/20 ${EXPENSE_INFO[exp.k].tailwind} transition-all duration-500 cursor-pointer hover:opacity-90`;
                 div.style.width = `${visualPct}%`;
-                div.title = `${EXPENSE_INFO[exp.k].name}: ${formatMoney(exp.v)}/mo`;
+                
+                const tooltipText = `${EXPENSE_INFO[exp.k].icon} ${EXPENSE_INFO[exp.k].name}: ${formatMoney(exp.v)}/mo`;
+                
+                // Add pop-out tooltip event listeners
+                div.addEventListener('mouseenter', (e) => showTooltip(e, tooltipText));
+                div.addEventListener('mousemove', moveTooltip);
+                div.addEventListener('mouseleave', hideTooltip);
+                
+                // Touch events for mobile
+                div.addEventListener('touchstart', (e) => {
+                    showTooltip(e, tooltipText);
+                }, {passive: true});
+                div.addEventListener('touchmove', (e) => {
+                    moveTooltip(e);
+                }, {passive: true});
+                div.addEventListener('touchend', hideTooltip);
+
                 bar.appendChild(div);
             });
 
@@ -1199,6 +1245,43 @@
                 }
             };
             window.requestAnimationFrame(step);
+        }
+
+        const tooltipEl = document.getElementById('bar-tooltip');
+
+        function showTooltip(e, text) {
+            if (!tooltipEl) return;
+            tooltipEl.innerHTML = text;
+            tooltipEl.classList.remove('hidden');
+            void tooltipEl.offsetWidth; // Trigger DOM reflow to transition
+            tooltipEl.classList.remove('opacity-0', 'scale-95');
+            tooltipEl.classList.add('opacity-100', 'scale-100');
+            moveTooltip(e);
+        }
+
+        function moveTooltip(e) {
+            if (!tooltipEl) return;
+            let x = e.clientX;
+            let y = e.clientY;
+            if (e.touches && e.touches.length > 0) {
+                x = e.touches[0].clientX;
+                y = e.touches[0].clientY;
+            }
+            if (x === undefined || y === undefined) return;
+            
+            tooltipEl.style.left = x + 'px';
+            tooltipEl.style.top = (y - 25) + 'px';
+        }
+
+        function hideTooltip() {
+            if (!tooltipEl) return;
+            tooltipEl.classList.remove('opacity-100', 'scale-100');
+            tooltipEl.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => {
+                if (tooltipEl.classList.contains('opacity-0')) {
+                    tooltipEl.classList.add('hidden');
+                }
+            }, 200);
         }
 
         window.onload = () => {
