@@ -475,7 +475,7 @@
             </div>
 
             <h3 class="text-xl md:text-2xl font-black text-slate-800 mb-4 md:mb-6 text-center sm:text-left">What Would You Do?</h3>
-            <div class="grid sm:grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-10 w-full">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-10 w-full">
                 <!-- Scenario 1: Earn More -->
                 <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-200 hover:border-orange-300 transition-colors flex flex-col justify-between">
                     <div>
@@ -504,7 +504,7 @@
                             <span class="text-2xl md:text-3xl">🚗</span>
                             <h4 class="font-bold text-lg md:text-xl">Cut Transit Costs</h4>
                         </div>
-                        <p class="text-xs md:text-sm text-slate-600 mb-4 md:mb-6">What if you took the bus, carpooled, or sold a car?</p>
+                        <p class="text-xs md:text-sm text-slate-600 mb-4 md:mb-6">What if you took the bus or carpooled?</p>
                     </div>
                     <div>
                         <div class="flex justify-between font-bold text-sm md:text-base text-slate-700 mb-2">
@@ -514,6 +514,27 @@
                         <input type="range" id="slider-transit" min="0" max="1500" step="50" value="500" class="w-full touch-pan-x">
                         <div class="mt-4 text-center">
                             <button id="btn-reset-transit" class="text-xs md:text-sm font-semibold text-blue-600 hover:underline">Reset to Average Cost</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenario 3: Food -->
+                <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-200 hover:border-yellow-300 transition-colors flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-3 mb-3 md:mb-4">
+                            <span class="text-2xl md:text-3xl">🛒</span>
+                            <h4 class="font-bold text-lg md:text-xl">Cut Food Costs</h4>
+                        </div>
+                        <p class="text-xs md:text-sm text-slate-600 mb-4 md:mb-6">What if you bought cheaper groceries or dined out less?</p>
+                    </div>
+                    <div>
+                        <div class="flex justify-between font-bold text-sm md:text-base text-slate-700 mb-2">
+                            <span>$0</span>
+                            <span id="slider-food-val" class="text-yellow-500">$500</span>
+                        </div>
+                        <input type="range" id="slider-food" min="0" max="1500" step="50" value="500" class="w-full touch-pan-x">
+                        <div class="mt-4 text-center">
+                            <button id="btn-reset-food" class="text-xs md:text-sm font-semibold text-blue-600 hover:underline">Reset to Average Cost</button>
                         </div>
                     </div>
                 </div>
@@ -673,7 +694,7 @@
             county: "Orange County",
             adults: 1, children: 0, workingAdults: 1,
             currentData: null,
-            customIncome: null, customTransit: null,
+            customIncome: null, customTransit: null, customFood: null,
             soundEnabled: false,
             // User inputted budget
             userBudget: {
@@ -692,11 +713,15 @@
 
         // 3. SOUND ENGINE
         const synth = new Tone.PolySynth(Tone.Synth, {
-            oscillator: { type: "triangle" },
-            envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 }
+            oscillator: { type: "sine" },
+            envelope: { attack: 0.05, decay: 0.2, sustain: 0.2, release: 1 },
+            volume: -12
         }).toDestination();
         
-        const membrane = new Tone.MembraneSynth().toDestination();
+        const membrane = new Tone.MembraneSynth({
+            envelope: { attack: 0.02, decay: 0.2, sustain: 0, release: 0.2 },
+            volume: -15
+        }).toDestination();
         
         function playSound(type) {
             if (!gameState.soundEnabled) return;
@@ -790,6 +815,13 @@
                 updatePaycheckVisual();
             });
 
+            safeAdd('slider-food', 'input', (e) => {
+                gameState.customFood = parseInt(e.target.value);
+                const foodVal = document.getElementById('slider-food-val');
+                if (foodVal) foodVal.innerText = formatMoney(gameState.customFood) + "/mo";
+                updatePaycheckVisual();
+            });
+
             safeAdd('btn-reset-income', 'click', () => {
                 if (!gameState.currentData) return;
                 gameState.customIncome = gameState.currentData.annual;
@@ -802,11 +834,23 @@
 
             safeAdd('btn-reset-transit', 'click', () => {
                 if (!gameState.currentData) return;
-                gameState.customTransit = gameState.currentData.transportation;
+                const hasUserBudget = gameState.userBudget.income > 0 || gameState.userBudget.transportation > 0;
+                gameState.customTransit = hasUserBudget ? gameState.userBudget.transportation : gameState.currentData.transportation;
                 const slider = document.getElementById('slider-transit');
                 if (slider) slider.value = gameState.customTransit;
                 const transitVal = document.getElementById('slider-transit-val');
                 if (transitVal) transitVal.innerText = formatMoney(gameState.customTransit) + "/mo";
+                updatePaycheckVisual();
+            });
+
+            safeAdd('btn-reset-food', 'click', () => {
+                if (!gameState.currentData) return;
+                const hasUserBudget = gameState.userBudget.income > 0 || gameState.userBudget.food > 0;
+                gameState.customFood = hasUserBudget ? (gameState.userBudget.food || 0) : gameState.currentData.food;
+                const slider = document.getElementById('slider-food');
+                if (slider) slider.value = gameState.customFood;
+                const foodVal = document.getElementById('slider-food-val');
+                if (foodVal) foodVal.innerText = formatMoney(gameState.customFood) + "/mo";
                 updatePaycheckVisual();
             });
 
@@ -1043,10 +1087,11 @@
         }
 
         function resetSliders() {
-            const hasUserBudget = gameState.userBudget.income > 0;
+            const hasUserBudget = gameState.userBudget.income > 0 || gameState.userBudget.housing > 0;
             
             gameState.customIncome = hasUserBudget ? (gameState.userBudget.income * 12) : gameState.currentData.annual;
-            gameState.customTransit = hasUserBudget ? gameState.userBudget.transportation : gameState.currentData.transportation;
+            gameState.customTransit = hasUserBudget ? (gameState.userBudget.transportation || 0) : gameState.currentData.transportation;
+            gameState.customFood = hasUserBudget ? (gameState.userBudget.food || 0) : gameState.currentData.food;
             
             const incSlider = document.getElementById('slider-income');
             if(incSlider) {
@@ -1064,11 +1109,22 @@
             const transVal = document.getElementById('slider-transit-val');
             if(transVal) transVal.innerText = formatMoney(gameState.customTransit) + "/mo";
             
+            const foodSlider = document.getElementById('slider-food');
+            if(foodSlider) {
+                if(gameState.customFood > parseInt(foodSlider.max)) foodSlider.max = gameState.customFood + 500;
+                foodSlider.value = gameState.customFood;
+            }
+            const foodVal = document.getElementById('slider-food-val');
+            if(foodVal) foodVal.innerText = formatMoney(gameState.customFood) + "/mo";
+            
             const btnResetIncome = document.getElementById('btn-reset-income');
             if(btnResetIncome) btnResetIncome.innerText = hasUserBudget ? "Reset to My Budget" : "Reset to Living Wage";
             
             const btnResetTransit = document.getElementById('btn-reset-transit');
             if(btnResetTransit) btnResetTransit.innerText = hasUserBudget ? "Reset to My Budget" : "Reset to Average Cost";
+
+            const btnResetFood = document.getElementById('btn-reset-food');
+            if(btnResetFood) btnResetFood.innerText = hasUserBudget ? "Reset to My Budget" : "Reset to Average Cost";
         }
 
         function updatePaycheckVisual() {
@@ -1080,12 +1136,12 @@
             let bHousing = hasUserBudget ? (gameState.userBudget.housing || 0) : data.housing;
             let bTaxes = hasUserBudget ? (gameState.userBudget.taxes || 0) : data.taxes;
             let bChildcare = hasUserBudget ? (gameState.userBudget.childcare || 0) : data.childcare;
-            let bFood = hasUserBudget ? (gameState.userBudget.food || 0) : data.food;
             let bHealth = hasUserBudget ? (gameState.userBudget.health || 0) : data.health;
             
             let trans = gameState.customTransit;
-            let otherFixed = bHousing + bChildcare + bFood + bHealth + bTaxes;
-            let totalExpenses = otherFixed + trans;
+            let foodCost = gameState.customFood;
+            let otherFixed = bHousing + bChildcare + bHealth + bTaxes;
+            let totalExpenses = otherFixed + trans + foodCost;
             let moneyLeft = customMonthlyIncome - totalExpenses;
 
             document.getElementById('viz-income-text').innerText = formatMoney(customMonthlyIncome) + "/MO";
@@ -1098,7 +1154,7 @@
                 {k: 'taxes', v: bTaxes},
                 {k: 'childcare', v: bChildcare},
                 {k: 'transportation', v: trans},
-                {k: 'food', v: bFood},
+                {k: 'food', v: foodCost},
                 {k: 'health', v: bHealth}
             ];
 
