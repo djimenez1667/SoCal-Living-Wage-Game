@@ -8,6 +8,9 @@
     <!-- Tailwind CSS for Responsive Layout & Utility Classes -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Tone.js for Sound Effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -78,7 +81,6 @@
             animation: fadeIn 0.4s ease forwards;
         }
         
-        /* Flex replaces block to solve vertical alignment bugs across devices */
         .game-screen.active {
             display: flex;
         }
@@ -119,6 +121,12 @@
             border-radius: 5px;
         }
 
+        /* Form Inputs */
+        .budget-input-wrapper:focus-within {
+            border-color: var(--sunset-orange);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+        }
+
         /* Modal */
         .modal-overlay {
             display: none;
@@ -130,7 +138,6 @@
             animation: fadeIn 0.2s ease;
         }
         
-        /* Scrollable modal content for landscape mobile */
         .modal-content {
             max-height: 90dvh;
             overflow-y: auto;
@@ -160,30 +167,32 @@
                 <span class="text-sunset sm:hidden inline-block">SoCal Game</span>
             </div>
             
-            <!-- Progress Bar -->
-            <div class="flex items-center w-full max-w-[120px] sm:max-w-[200px] md:max-w-sm mx-auto px-2">
-                <div id="prog-dot-1" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 rounded-full bg-gray-300 shrink-0"></div>
+            <!-- Progress Bar (6 Steps now) -->
+            <div class="flex items-center w-full max-w-[150px] sm:max-w-[250px] md:max-w-sm mx-auto px-2">
+                <div id="prog-dot-1" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-3 md:h-3 rounded-full bg-gray-300 shrink-0"></div>
                 <div id="prog-line-1" class="step-line flex-1 h-1 bg-gray-300 mx-1 rounded"></div>
-                <div id="prog-dot-2" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 rounded-full bg-gray-300 shrink-0"></div>
+                <div id="prog-dot-2" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-3 md:h-3 rounded-full bg-gray-300 shrink-0"></div>
                 <div id="prog-line-2" class="step-line flex-1 h-1 bg-gray-300 mx-1 rounded"></div>
-                <div id="prog-dot-3" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 rounded-full bg-gray-300 shrink-0"></div>
+                <div id="prog-dot-3" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-3 md:h-3 rounded-full bg-gray-300 shrink-0"></div>
                 <div id="prog-line-3" class="step-line flex-1 h-1 bg-gray-300 mx-1 rounded"></div>
-                <div id="prog-dot-4" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 rounded-full bg-gray-300 shrink-0"></div>
+                <div id="prog-dot-4" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-3 md:h-3 rounded-full bg-gray-300 shrink-0"></div>
                 <div id="prog-line-4" class="step-line flex-1 h-1 bg-gray-300 mx-1 rounded"></div>
-                <div id="prog-dot-5" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 rounded-full bg-gray-300 shrink-0"></div>
+                <div id="prog-dot-5" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-3 md:h-3 rounded-full bg-gray-300 shrink-0"></div>
+                <div id="prog-line-5" class="step-line flex-1 h-1 bg-gray-300 mx-1 rounded"></div>
+                <div id="prog-dot-6" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-3 md:h-3 rounded-full bg-gray-300 shrink-0"></div>
             </div>
             
-            <button id="btn-reset" class="text-xs md:text-sm font-bold text-slate-500 hover:text-red-500 transition-colors whitespace-nowrap">START OVER</button>
+            <div class="flex items-center gap-2 md:gap-4">
+                <button id="btn-sound-toggle" class="text-base md:text-xl opacity-50 hover:opacity-100 transition-opacity" title="Toggle Sound">🔇</button>
+                <button id="btn-reset" class="text-xs md:text-sm font-bold text-slate-500 hover:text-red-500 transition-colors whitespace-nowrap">START OVER</button>
+            </div>
         </div>
     </header>
 
-    <!-- Main Game Container -->
     <main class="flex-grow w-full flex flex-col">
         
         <!-- SCREEN 0: INTRO -->
-        <!-- min-h-[100dvh] ensures full viewport size. flex-col and center alignment applied to prevent clipping -->
         <section id="screen-0" class="game-screen active flex-col justify-center items-center w-full min-h-[100dvh] bg-sunset relative overflow-hidden">
-            <!-- Decorative BG Elements -->
             <div class="absolute bottom-0 w-full h-48 md:h-64 bg-black/20" style="clip-path: polygon(0 100%, 100% 100%, 100% 30%, 50% 0, 0 40%);"></div>
             <div class="absolute bottom-0 text-white/10 text-7xl md:text-9xl font-black -mb-4 md:-mb-10 w-full text-center tracking-tighter whitespace-nowrap pointer-events-none">SOUTHERN CALIFORNIA</div>
             
@@ -203,7 +212,6 @@
         </section>
 
         <!-- SCREEN 1: COUNTY -->
-        <!-- justify-start prevents top-clipping on small landscape phones, md:justify-center vertically centers on larger screens -->
         <section id="screen-1" class="game-screen flex-col justify-start md:justify-center w-full max-w-6xl mx-auto px-4 py-8 md:py-12 min-h-[calc(100dvh-60px)]">
             <div class="text-center mb-6 md:mb-10 w-full shrink-0 pt-4 md:pt-0">
                 <h2 class="text-xs md:text-sm font-bold text-slate-500 tracking-widest mb-1 md:mb-2">STEP 1</h2>
@@ -211,7 +219,6 @@
                 <p class="text-base sm:text-lg text-slate-600 mt-2 md:mt-4">Select a Southern California county to begin.</p>
             </div>
             
-            <!-- sm:grid-cols-3 optimizes layout for landscape phones/tablets -->
             <div id="county-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 w-full pb-10">
                 <!-- Counties populated by JS -->
             </div>
@@ -235,7 +242,6 @@
                                 <h3 class="font-bold text-lg md:text-xl">Adults</h3>
                                 <p class="text-xs md:text-sm text-slate-500">Ages 18+</p>
                             </div>
-                            <!-- Touch targets increased (w-12 h-12) for better mobile accessibility -->
                             <div class="flex items-center gap-3 md:gap-4">
                                 <button class="btn-adult-minus w-12 h-12 rounded-full bg-slate-200 hover:bg-slate-300 active:bg-slate-400 font-bold text-2xl flex items-center justify-center transition-colors">−</button>
                                 <span id="val-adults" class="text-2xl md:text-3xl font-black w-6 text-center">1</span>
@@ -273,6 +279,7 @@
                     <!-- Visual Representation -->
                     <div class="bg-slate-50 rounded-2xl p-6 text-center border border-slate-200 shadow-inner min-h-[200px] md:min-h-[250px] flex flex-col justify-center">
                         <h3 class="text-xs md:text-sm font-bold text-slate-400 tracking-widest mb-3 md:mb-4">YOUR HOUSEHOLD</h3>
+                        <!-- Genderless Emojis Updated Here -->
                         <div id="household-emojis" class="text-5xl md:text-6xl flex justify-center flex-wrap gap-2 mb-4 md:mb-6 min-h-[70px] md:min-h-[80px] leading-tight">
                             <!-- Emojis injected via JS -->
                         </div>
@@ -282,6 +289,89 @@
                 </div>
 
                 <div class="mt-8 md:mt-12 text-center">
+                    <button id="btn-goto-budget" class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold text-base md:text-lg px-8 py-4 rounded-full shadow-lg transition-transform hover:-translate-y-1">
+                        NEXT: MY CURRENT BUDGET ➔
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: INPUT BUDGET -->
+        <section id="screen-3" class="game-screen flex-col justify-start md:justify-center w-full max-w-5xl mx-auto px-4 py-8 md:py-12 min-h-[calc(100dvh-60px)]">
+            <div class="text-center mb-6 md:mb-10 shrink-0 pt-4 md:pt-0">
+                <h2 class="text-xs md:text-sm font-bold text-slate-500 tracking-widest mb-1 md:mb-2">STEP 3</h2>
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-800">Your Current Budget</h1>
+                <p class="text-base sm:text-lg text-slate-600 mt-2 md:mt-4">Estimate your current monthly income and expenses to see how it compares.</p>
+            </div>
+
+            <div class="glass-card p-6 md:p-10 w-full mb-10">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                    
+                    <!-- Income Input -->
+                    <div class="md:col-span-2 mb-2">
+                        <label class="block text-sm md:text-base font-black text-slate-700 mb-2 uppercase tracking-wide">Monthly Take-Home Income</label>
+                        <div class="budget-input-wrapper bg-slate-50 border-2 border-slate-200 rounded-xl p-4 flex items-center transition-colors">
+                            <span class="text-2xl font-black text-slate-400 mr-2">$</span>
+                            <input type="number" id="user-input-income" class="w-full text-2xl font-black text-slate-800 bg-transparent outline-none" placeholder="e.g. 4000">
+                        </div>
+                    </div>
+
+                    <!-- Expense Inputs -->
+                    <div class="space-y-2">
+                        <label class="block text-xs md:text-sm font-bold text-slate-600 uppercase">Housing (Rent/Mortgage)</label>
+                        <div class="budget-input-wrapper bg-white border border-slate-200 rounded-lg p-3 flex items-center transition-colors">
+                            <span class="text-lg font-bold text-slate-400 mr-2">$</span>
+                            <input type="number" id="user-input-housing" class="w-full text-lg font-bold text-slate-700 bg-transparent outline-none" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs md:text-sm font-bold text-slate-600 uppercase">Food (Groceries & Eating Out)</label>
+                        <div class="budget-input-wrapper bg-white border border-slate-200 rounded-lg p-3 flex items-center transition-colors">
+                            <span class="text-lg font-bold text-slate-400 mr-2">$</span>
+                            <input type="number" id="user-input-food" class="w-full text-lg font-bold text-slate-700 bg-transparent outline-none" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs md:text-sm font-bold text-slate-600 uppercase">Transportation (Car, Gas, Transit)</label>
+                        <div class="budget-input-wrapper bg-white border border-slate-200 rounded-lg p-3 flex items-center transition-colors">
+                            <span class="text-lg font-bold text-slate-400 mr-2">$</span>
+                            <input type="number" id="user-input-transportation" class="w-full text-lg font-bold text-slate-700 bg-transparent outline-none" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs md:text-sm font-bold text-slate-600 uppercase">Health Care (Insurance, Meds)</label>
+                        <div class="budget-input-wrapper bg-white border border-slate-200 rounded-lg p-3 flex items-center transition-colors">
+                            <span class="text-lg font-bold text-slate-400 mr-2">$</span>
+                            <input type="number" id="user-input-health" class="w-full text-lg font-bold text-slate-700 bg-transparent outline-none" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs md:text-sm font-bold text-slate-600 uppercase">Childcare (If applicable)</label>
+                        <div class="budget-input-wrapper bg-white border border-slate-200 rounded-lg p-3 flex items-center transition-colors">
+                            <span class="text-lg font-bold text-slate-400 mr-2">$</span>
+                            <input type="number" id="user-input-childcare" class="w-full text-lg font-bold text-slate-700 bg-transparent outline-none" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs md:text-sm font-bold text-slate-600 uppercase">Estimated Monthly Taxes</label>
+                        <div class="budget-input-wrapper bg-white border border-slate-200 rounded-lg p-3 flex items-center transition-colors">
+                            <span class="text-lg font-bold text-slate-400 mr-2">$</span>
+                            <input type="number" id="user-input-taxes" class="w-full text-lg font-bold text-slate-700 bg-transparent outline-none" placeholder="0">
+                        </div>
+                        <div class="text-[11px] md:text-xs text-slate-500 mt-1 space-y-1">
+                            <p>📐 <b>Formula:</b> Est. Taxes ≈ Monthly Income × 18% (0.18)</p>
+                            <button type="button" id="btn-calc-taxes" class="text-blue-600 hover:text-blue-800 font-semibold underline cursor-pointer">⚡ Auto-calculate 18% tax estimate</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="mt-8 md:mt-10 text-center">
                     <button id="btn-see-wage" class="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-bold text-base md:text-lg px-8 py-4 rounded-full shadow-lg transition-transform hover:-translate-y-1">
                         SEE MY LIVING WAGE ➔
                     </button>
@@ -289,9 +379,8 @@
             </div>
         </section>
 
-        <!-- SCREEN 3: RESULTS -->
-        <section id="screen-3" class="game-screen flex-col justify-start w-full max-w-6xl mx-auto px-4 py-8 md:py-12 min-h-[calc(100dvh-60px)]">
-            <!-- Dynamic County Switcher Header -->
+        <!-- SCREEN 4: RESULTS (COMPARE & CONTRAST) -->
+        <section id="screen-4" class="game-screen flex-col justify-start w-full max-w-6xl mx-auto px-4 py-8 md:py-12 min-h-[calc(100dvh-60px)]">
             <div class="flex flex-col sm:flex-row justify-between items-center mb-6 md:mb-8 bg-white p-3 md:p-4 rounded-2xl shadow-sm border border-slate-100 mt-2 shrink-0">
                 <div class="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
                     <span class="text-2xl md:text-3xl shrink-0">📍</span>
@@ -309,20 +398,39 @@
 
             <!-- Hero Number -->
             <div class="text-center mb-8 md:mb-12 shrink-0">
-                <h2 class="text-xs md:text-sm font-bold text-slate-500 tracking-widest mb-2">YOUR LIVING WAGE</h2>
-                <div class="text-6xl sm:text-7xl md:text-9xl font-black text-slate-800 tracking-tighter mb-3 md:mb-4 animate-pulse-soft">
-                    $<span id="res-hourly">0.00</span><span class="text-2xl sm:text-3xl md:text-5xl text-slate-400">/HR</span>
+                <h2 class="text-xs md:text-sm font-bold text-slate-500 tracking-widest mb-2 uppercase">Required Living Wage vs Your Income</h2>
+                
+                <div class="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 mt-4">
+                    <!-- Living Wage Need -->
+                    <div class="bg-white rounded-2xl p-6 border-2 border-orange-200 shadow-sm w-full md:w-auto relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-orange-500"></div>
+                        <div class="text-sm font-bold text-orange-500 uppercase mb-1">Living Wage Requires</div>
+                        <div class="text-4xl sm:text-5xl md:text-6xl font-black text-orange-900 tracking-tighter">
+                            $<span id="res-monthly">0</span><span class="text-xl sm:text-2xl md:text-3xl text-orange-400">/MO</span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-3xl text-slate-300 font-black hidden md:block">VS</div>
+                    
+                    <!-- User Income -->
+                    <div class="bg-white rounded-2xl p-6 border-2 border-blue-200 shadow-sm w-full md:w-auto relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
+                        <div class="text-sm font-bold text-blue-500 uppercase mb-1">Your Stated Income</div>
+                        <div class="text-4xl sm:text-5xl md:text-6xl font-black text-blue-900 tracking-tighter">
+                            $<span id="res-user-income">0</span><span class="text-xl sm:text-2xl md:text-3xl text-blue-400">/MO</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex flex-wrap justify-center gap-2 md:gap-4 text-sm sm:text-base md:text-xl font-bold text-slate-600">
-                    <span class="bg-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg shadow-sm border border-slate-100">$<span id="res-annual">0</span> / YEAR</span>
-                    <span class="bg-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg shadow-sm border border-slate-100">$<span id="res-monthly">0</span> / MO</span>
-                    <span class="bg-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg shadow-sm border border-slate-100">$<span id="res-weekly">0</span> / WK</span>
+
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 text-sm sm:text-base md:text-lg font-bold text-slate-600 mt-6">
+                    <span class="bg-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg shadow-sm border border-slate-100">Hourly Need: $<span id="res-hourly">0.00</span></span>
+                    <span class="bg-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg shadow-sm border border-slate-100">Annual Need: $<span id="res-annual">0</span></span>
                 </div>
             </div>
 
             <!-- Expense Cards -->
             <div class="mb-10 w-full">
-                <h3 class="text-xl md:text-2xl font-black text-slate-800 mb-4 md:mb-6 text-center">Where does the money go? (Monthly)</h3>
+                <h3 class="text-xl md:text-2xl font-black text-slate-800 mb-4 md:mb-6 text-center">Your Budget vs. Living Wage Reality</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6" id="expense-cards-container">
                     <!-- Cards populated by JS -->
                 </div>
@@ -335,23 +443,21 @@
             </div>
         </section>
 
-        <!-- SCREEN 4: WHAT-IF GAMEPLAY -->
-        <section id="screen-4" class="game-screen flex-col justify-start md:justify-center w-full max-w-6xl mx-auto px-4 py-8 md:py-12 min-h-[calc(100dvh-60px)]">
+        <!-- SCREEN 5: WHAT-IF GAMEPLAY -->
+        <section id="screen-5" class="game-screen flex-col justify-start md:justify-center w-full max-w-6xl mx-auto px-4 py-8 md:py-12 min-h-[calc(100dvh-60px)]">
             <div class="text-center mb-6 md:mb-10 shrink-0 pt-4 md:pt-0">
-                <h2 class="text-xs md:text-sm font-bold text-slate-500 tracking-widest mb-1 md:mb-2">STEP 4</h2>
+                <h2 class="text-xs md:text-sm font-bold text-slate-500 tracking-widest mb-1 md:mb-2">STEP 5</h2>
                 <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-800">Can You Make It?</h1>
                 <p class="text-base sm:text-lg text-slate-600 mt-2 md:mt-4">Adjust the scenarios below to see how it affects your financial pressure.</p>
             </div>
 
             <!-- Paycheck Bar & Pressure -->
-            <div class="glass-card p-5 sm:p-6 md:p-10 mb-8 md:mb-10 overflow-hidden relative w-full">
-                <!-- Bar Chart -->
+            <div class="glass-card p-5 sm:p-6 md:p-10 mb-8 md:mb-10 overflow-hidden relative w-full border-2 border-slate-200">
                 <h3 class="font-bold text-sm md:text-xl mb-3 md:mb-4 uppercase tracking-wider text-slate-700">YOUR MONTHLY INCOME (<span id="viz-income-text"></span>)</h3>
                 <div class="w-full h-10 md:h-12 bg-slate-200 rounded-full overflow-hidden flex shadow-inner mb-5 md:mb-6" id="paycheck-bar">
                     <!-- Segments generated by JS -->
                 </div>
                 
-                <!-- Pressure Meter -->
                 <div class="border-t border-slate-200 pt-5 md:pt-6 mt-5 md:mt-6">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-3 md:mb-2 gap-2">
                         <h3 class="font-bold text-sm md:text-xl uppercase tracking-wider text-slate-700">FINANCIAL PRESSURE</h3>
@@ -361,18 +467,17 @@
                         </div>
                     </div>
                     
-                    <div class="w-full h-5 md:h-6 bg-slate-200 rounded-full overflow-hidden shadow-inner mb-2 relative">
+                    <div class="w-full h-6 md:h-8 bg-slate-200 rounded-full overflow-hidden shadow-inner mb-2 relative">
                         <div id="pressure-fill" class="h-full w-full transition-all duration-500 bg-green-500"></div>
                     </div>
                     <p id="pressure-message" class="text-center font-bold text-sm md:text-lg text-slate-700 mt-2">...</p>
                 </div>
             </div>
 
-            <!-- Scenarios -->
             <h3 class="text-xl md:text-2xl font-black text-slate-800 mb-4 md:mb-6 text-center sm:text-left">What Would You Do?</h3>
             <div class="grid sm:grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-10 w-full">
                 <!-- Scenario 1: Earn More -->
-                <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-200 hover:border-orange-300 transition-colors flex flex-col justify-between">
                     <div>
                         <div class="flex items-center gap-3 mb-3 md:mb-4">
                             <span class="text-2xl md:text-3xl">💼</span>
@@ -393,7 +498,7 @@
                 </div>
 
                 <!-- Scenario 2: Transportation -->
-                <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-200 hover:border-green-300 transition-colors flex flex-col justify-between">
                     <div>
                         <div class="flex items-center gap-3 mb-3 md:mb-4">
                             <span class="text-2xl md:text-3xl">🚗</span>
@@ -421,23 +526,22 @@
             </div>
         </section>
 
-        <!-- SCREEN 5: COMPARE -->
-        <section id="screen-5" class="game-screen flex-col justify-start md:justify-center w-full max-w-5xl mx-auto px-4 py-8 md:py-12 min-h-[calc(100dvh-60px)]">
+        <!-- SCREEN 6: COMPARE -->
+        <section id="screen-6" class="game-screen flex-col justify-start md:justify-center w-full max-w-5xl mx-auto px-4 py-8 md:py-12 min-h-[calc(100dvh-60px)]">
             <div class="text-center mb-6 md:mb-10 shrink-0 pt-4 md:pt-0">
-                <h2 class="text-xs md:text-sm font-bold text-slate-500 tracking-widest mb-1 md:mb-2">STEP 5</h2>
+                <h2 class="text-xs md:text-sm font-bold text-slate-500 tracking-widest mb-1 md:mb-2">STEP 6</h2>
                 <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-800">Compare Regions</h1>
-                <p class="text-base sm:text-lg text-slate-600 mt-2 md:mt-4">How does your county stack up for your exact household?</p>
+                <p class="text-base sm:text-lg text-slate-600 mt-2 md:mt-4">How does your county (and your inputted budget) stack up?</p>
             </div>
 
             <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden mb-8 md:mb-10 w-full">
-                <!-- Wrapper for responsive horizontal scrolling on small screens -->
                 <div class="overflow-x-auto w-full">
                     <table class="w-full text-left border-collapse min-w-[600px]">
                         <thead>
                             <tr class="bg-slate-100 text-slate-600 text-xs md:text-sm uppercase tracking-wider">
-                                <th class="p-3 md:p-4 font-bold">County</th>
-                                <th class="p-3 md:p-4 font-bold">Hourly Wage</th>
-                                <th class="p-3 md:p-4 font-bold">Annual Wage</th>
+                                <th class="p-3 md:p-4 font-bold">County / Profile</th>
+                                <th class="p-3 md:p-4 font-bold">Hourly Need</th>
+                                <th class="p-3 md:p-4 font-bold">Annual Need</th>
                                 <th class="p-3 md:p-4 font-bold">Monthly Housing</th>
                             </tr>
                         </thead>
@@ -459,7 +563,7 @@
 
     <!-- Modal for Expense Details -->
     <div id="expense-modal" class="modal-overlay fixed inset-0 z-50 items-center justify-center p-4">
-        <div class="modal-content bg-white rounded-2xl max-w-md w-full p-6 md:p-8 shadow-2xl relative transform transition-all flex flex-col">
+        <div class="modal-content bg-white rounded-2xl max-w-md w-full p-6 md:p-8 shadow-2xl relative transform transition-all flex flex-col border-t-8 border-orange-500">
             <button id="btn-close-modal" class="absolute top-3 right-3 md:top-4 md:right-4 w-10 h-10 md:w-8 md:h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-bold text-slate-500 text-xl transition-colors">×</button>
             <div id="modal-icon" class="text-4xl md:text-5xl mb-3 md:mb-4">🏠</div>
             <h3 id="modal-title" class="text-2xl md:text-3xl font-black mb-1 md:mb-2 uppercase">Housing</h3>
@@ -467,16 +571,16 @@
             
             <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3 mt-auto">
                 <div class="flex justify-between items-center text-sm md:text-base">
-                    <span class="font-bold text-slate-500">Monthly Cost</span>
+                    <span class="font-bold text-slate-500">Required Monthly</span>
                     <span id="modal-monthly" class="font-black text-lg md:text-xl text-slate-800">$0</span>
                 </div>
                 <div class="flex justify-between items-center text-sm md:text-base">
-                    <span class="font-bold text-slate-500">Annual Cost</span>
+                    <span class="font-bold text-slate-500">Required Annual</span>
                     <span id="modal-annual" class="font-black text-lg md:text-xl text-slate-800">$0</span>
                 </div>
                 <div class="flex justify-between items-center pt-3 border-t border-slate-200 text-sm md:text-base">
-                    <span class="font-bold text-slate-500">% of Income</span>
-                    <span id="modal-percent" class="font-black text-lg md:text-xl text-slate-800 px-3 py-1 rounded bg-slate-200">0%</span>
+                    <span class="font-bold text-slate-500">% of Income Needed</span>
+                    <span id="modal-percent" class="font-black text-lg md:text-xl text-white px-3 py-1 rounded bg-blue-600 shadow-sm">0%</span>
                 </div>
             </div>
         </div>
@@ -497,7 +601,7 @@
 
     <script>
         /**
-         * SO CAL: MAKE ENDS MEET
+         * SO CAL LIVING-WAGE GAME
          * Main Game Logic
          */
 
@@ -509,18 +613,10 @@
         ];
 
         const baseOrangeCountyData = {
-            "1adult_0children_1worker": {
-                hourly: 25.10, annual: 52208, childcare: 0, housing: 1800, taxes: 520, transportation: 800, food: 400, health: 300, other: 530
-            },
-            "1adult_1children_1worker": {
-                hourly: 45.20, annual: 94016, childcare: 1200, housing: 2400, taxes: 1100, transportation: 900, food: 600, health: 700, other: 934
-            },
-            "2adults_2children_1worker": {
-                hourly: 42.50, annual: 88400, childcare: 0, housing: 2800, taxes: 950, transportation: 1100, food: 1100, health: 800, other: 616
-            },
-            "2adults_2children_2workers": {
-                hourly: 32.10, annual: 133536, childcare: 2200, housing: 2800, taxes: 1800, transportation: 1600, food: 1100, health: 800, other: 828
-            }
+            "1adult_0children_1worker": { hourly: 25.10, annual: 52208, childcare: 0, housing: 1800, taxes: 520, transportation: 800, food: 400, health: 300, other: 530 },
+            "1adult_1children_1worker": { hourly: 45.20, annual: 94016, childcare: 1200, housing: 2400, taxes: 1100, transportation: 900, food: 600, health: 700, other: 934 },
+            "2adults_2children_1worker": { hourly: 42.50, annual: 88400, childcare: 0, housing: 2800, taxes: 950, transportation: 1100, food: 1100, health: 800, other: 616 },
+            "2adults_2children_2workers": { hourly: 32.10, annual: 133536, childcare: 2200, housing: 2800, taxes: 1800, transportation: 1600, food: 1100, health: 800, other: 828 }
         };
 
         const livingWageData = {};
@@ -573,19 +669,44 @@
             county: "Orange County",
             adults: 1, children: 0, workingAdults: 1,
             currentData: null,
-            customIncome: null, customTransit: null
+            customIncome: null, customTransit: null,
+            soundEnabled: false,
+            // User inputted budget
+            userBudget: {
+                income: 0, housing: 0, food: 0, transportation: 0, health: 0, childcare: 0, taxes: 0
+            }
         };
 
         const EXPENSE_INFO = {
-            childcare: { name: "Childcare", icon: "🧸", color: "var(--c-childcare)", tailwind: "bg-purple-500", desc: "Estimated costs for childcare facilities or preschool." },
-            housing: { name: "Housing", icon: "🏠", color: "var(--c-housing)", tailwind: "bg-orange-500", desc: "Fair market rent estimates for apartments plus basic utilities." },
-            taxes: { name: "Taxes", icon: "🏛️", color: "var(--c-taxes)", tailwind: "bg-blue-500", desc: "Estimated federal, state, and local payroll taxes." },
-            transportation: { name: "Transit", icon: "🚗", color: "var(--c-transportation)", tailwind: "bg-green-500", desc: "Costs for commuting: gas, insurance, maintenance, or transit passes." },
-            food: { name: "Food", icon: "🛒", color: "var(--c-food)", tailwind: "bg-yellow-500", desc: "A thrifty to moderate food plan based on USDA guidelines." },
+            childcare: { name: "Childcare", icon: "🧸", color: "var(--c-childcare)", tailwind: "bg-purple-500", desc: "Estimated monthly costs for daycare or preschool for children." },
+            housing: { name: "Housing", icon: "🏠", color: "var(--c-housing)", tailwind: "bg-orange-500", desc: "Fair market rent including basic utilities (water, gas, electricity)." },
+            taxes: { name: "Taxes", icon: "🏛️", color: "var(--c-taxes)", tailwind: "bg-blue-500", desc: "Estimated federal, state, and local taxes based on income bracket." },
+            transportation: { name: "Transit", icon: "🚗", color: "var(--c-transportation)", tailwind: "bg-green-500", desc: "Costs associated with owning a car, insurance, gas, or public transit." },
+            food: { name: "Food", icon: "🛒", color: "var(--c-food)", tailwind: "bg-yellow-500", desc: "USDA low-cost food plan estimates for preparing meals at home." },
             health: { name: "Health", icon: "⚕️", color: "var(--c-health)", tailwind: "bg-rose-500", desc: "Typical out-of-pocket health expenses and insurance premiums." }
         };
 
-        // 3. UI CONTROLLERS
+        // 3. SOUND ENGINE
+        const synth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "triangle" },
+            envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 }
+        }).toDestination();
+        
+        const membrane = new Tone.MembraneSynth().toDestination();
+        
+        function playSound(type) {
+            if (!gameState.soundEnabled) return;
+            Tone.start();
+            try {
+                if (type === 'click') synth.triggerAttackRelease("C5", "32n");
+                else if (type === 'pop') membrane.triggerAttackRelease("G4", "16n");
+                else if (type === 'success') synth.triggerAttackRelease(["C4", "E4", "G4"], "8n");
+                else if (type === 'woosh') synth.triggerAttackRelease(["G3", "C4"], "16n");
+                else if (type === 'error') synth.triggerAttackRelease(["C3", "D#3"], "8n");
+            } catch (e) { console.log("Audio playback skipped."); }
+        }
+
+        // 4. UI CONTROLLERS
         function initGame() {
             generateDemoData();
             setupEventListeners();
@@ -595,48 +716,61 @@
             goToStep(0);
         }
 
-        function setupEventListeners() {
-            const safeAdd = (id, evt, fn) => {
-                const el = document.getElementById(id);
-                if (el) el.addEventListener(evt, fn);
-            };
+        function safeAdd(id, evt, fn) {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener(evt, fn);
+        }
 
-            safeAdd('btn-start', 'click', () => goToStep(1));
-            safeAdd('btn-see-wage', 'click', () => { calculateData(); goToStep(3); });
-            safeAdd('btn-survive', 'click', () => { resetSliders(); updatePaycheckVisual(); goToStep(4); });
-            safeAdd('btn-compare-options', 'click', () => { renderCompareTable(); goToStep(5); });
-            safeAdd('btn-reset', 'click', resetGame);
+        function setupEventListeners() {
+            safeAdd('btn-start', 'click', () => { playSound('success'); goToStep(1); });
+            safeAdd('btn-goto-budget', 'click', () => { playSound('success'); goToStep(3); });
             
-            document.querySelectorAll('.btn-restart-game').forEach(b => b.addEventListener('click', resetGame));
+            safeAdd('btn-see-wage', 'click', () => { 
+                playSound('success'); 
+                saveUserBudget();
+                calculateData(); 
+                goToStep(4); 
+            });
+
+            safeAdd('btn-calc-taxes', 'click', () => {
+                playSound('pop');
+                const inc = Number(document.getElementById('user-input-income')?.value) || 0;
+                if (inc > 0) {
+                    const taxesInput = document.getElementById('user-input-taxes');
+                    if (taxesInput) taxesInput.value = Math.round(inc * 0.18);
+                }
+            });
             
-            const btnAdultMinus = document.querySelector('.btn-adult-minus');
-            if (btnAdultMinus) btnAdultMinus.addEventListener('click', () => modifyHousehold('adults', -1));
-            const btnAdultPlus = document.querySelector('.btn-adult-plus');
-            if (btnAdultPlus) btnAdultPlus.addEventListener('click', () => modifyHousehold('adults', 1));
-            const btnChildMinus = document.querySelector('.btn-child-minus');
-            if (btnChildMinus) btnChildMinus.addEventListener('click', () => modifyHousehold('children', -1));
-            const btnChildPlus = document.querySelector('.btn-child-plus');
-            if (btnChildPlus) btnChildPlus.addEventListener('click', () => modifyHousehold('children', 1));
-            const btnWorkerMinus = document.querySelector('.btn-worker-minus');
-            if (btnWorkerMinus) btnWorkerMinus.addEventListener('click', () => modifyHousehold('workers', -1));
-            const btnWorkerPlus = document.querySelector('.btn-worker-plus');
-            if (btnWorkerPlus) btnWorkerPlus.addEventListener('click', () => modifyHousehold('workers', 1));
+            safeAdd('btn-survive', 'click', () => { playSound('woosh'); resetSliders(); updatePaycheckVisual(); goToStep(5); });
+            safeAdd('btn-compare-options', 'click', () => { playSound('woosh'); renderCompareTable(); goToStep(6); });
+            safeAdd('btn-reset', 'click', () => { playSound('error'); resetGame(); });
+            
+            safeAdd('btn-sound-toggle', 'click', (e) => {
+                gameState.soundEnabled = !gameState.soundEnabled;
+                e.target.innerText = gameState.soundEnabled ? '🔊' : '🔇';
+                e.target.classList.toggle('opacity-50', !gameState.soundEnabled);
+                if(gameState.soundEnabled) { Tone.start(); playSound('success'); }
+            });
+            
+            document.querySelectorAll('.btn-restart-game').forEach(b => b.addEventListener('click', () => { playSound('error'); resetGame(); }));
+            
+            const attachHouseholdBtn = (cls, type, diff) => {
+                const el = document.querySelector(cls);
+                if(el) el.addEventListener('click', () => modifyHousehold(type, diff));
+            }
+            attachHouseholdBtn('.btn-adult-minus', 'adults', -1);
+            attachHouseholdBtn('.btn-adult-plus', 'adults', 1);
+            attachHouseholdBtn('.btn-child-minus', 'children', -1);
+            attachHouseholdBtn('.btn-child-plus', 'children', 1);
+            attachHouseholdBtn('.btn-worker-minus', 'workers', -1);
+            attachHouseholdBtn('.btn-worker-plus', 'workers', 1);
 
             safeAdd('btn-close-modal', 'click', () => {
                 const modal = document.getElementById('expense-modal');
                 if (modal) modal.classList.remove('active');
             });
-
-            // Prevent modal close button from propagating if clicking inside modal content
-            document.querySelectorAll('.modal-content').forEach(el => {
-                el.addEventListener('click', (e) => e.stopPropagation());
-            });
-            // Close modal when clicking background overlay
-            document.querySelectorAll('.modal-overlay').forEach(el => {
-                el.addEventListener('click', (e) => {
-                    if (e.target === el) el.classList.remove('active');
-                });
-            });
+            document.querySelectorAll('.modal-content').forEach(el => el.addEventListener('click', (e) => e.stopPropagation()));
+            document.querySelectorAll('.modal-overlay').forEach(el => el.addEventListener('click', (e) => { if (e.target === el) el.classList.remove('active'); }));
 
             safeAdd('slider-income', 'input', (e) => {
                 gameState.customIncome = parseInt(e.target.value);
@@ -681,23 +815,17 @@
         function goToStep(step) {
             gameState.step = step;
             
-            if (step === 0) {
-                document.getElementById('game-header').classList.add('hidden');
-            } else {
-                document.getElementById('game-header').classList.remove('hidden');
-            }
+            if (step === 0) document.getElementById('game-header').classList.add('hidden');
+            else document.getElementById('game-header').classList.remove('hidden');
 
-            document.querySelectorAll('.game-screen').forEach(s => {
-                s.classList.remove('active');
-            });
+            document.querySelectorAll('.game-screen').forEach(s => s.classList.remove('active'));
             
             const targetScreen = document.getElementById(`screen-${step}`);
             if (targetScreen) targetScreen.classList.add('active');
             
-            // Scroll to top automatically when changing screens on mobile
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            for(let i=1; i<=5; i++) {
+            for(let i=1; i<=6; i++) {
                 const dot = document.getElementById(`prog-dot-${i}`);
                 const line = document.getElementById(`prog-line-${i}`);
                 if(dot) {
@@ -716,9 +844,28 @@
             gameState.adults = 1;
             gameState.children = 0;
             gameState.workingAdults = 1;
+            
+            ['income', 'housing', 'food', 'transportation', 'health', 'childcare', 'taxes'].forEach(id => {
+                const el = document.getElementById('user-input-' + id);
+                if(el) el.value = '';
+            });
+
             updateHouseholdView();
-            buildCountyGrid(); // Refresh UI selection
+            buildCountyGrid();
             goToStep(0);
+        }
+
+        function saveUserBudget() {
+            const getVal = (id) => Number(document.getElementById('user-input-' + id)?.value) || 0;
+            gameState.userBudget = {
+                income: getVal('income'),
+                housing: getVal('housing'),
+                food: getVal('food'),
+                transportation: getVal('transportation'),
+                health: getVal('health'),
+                childcare: getVal('childcare'),
+                taxes: getVal('taxes')
+            };
         }
 
         function buildCountyGrid() {
@@ -727,17 +874,16 @@
             COUNTIES.forEach(county => {
                 const isSelected = gameState.county === county;
                 const div = document.createElement('div');
-                div.className = `glass-card interactive-card p-4 sm:p-6 text-center cursor-pointer border-2 ${isSelected ? 'border-orange-500 bg-orange-50' : 'border-transparent'}`;
+                div.className = `glass-card interactive-card p-4 sm:p-6 text-center cursor-pointer border-4 ${isSelected ? 'border-orange-500 bg-orange-50' : 'border-transparent'}`;
                 
-                // Adjust text size dynamically based on name length for mobile
-                let textClass = "text-sm sm:text-base";
-                if(county.length > 15) textClass = "text-xs sm:text-sm";
+                let textClass = county.length > 15 ? "text-xs sm:text-sm" : "text-sm sm:text-base";
                 
                 div.innerHTML = `
                     <div class="text-3xl sm:text-4xl mb-2 sm:mb-3">📍</div>
                     <h3 class="font-bold text-slate-700 leading-tight ${textClass}">${county.replace(' County', '')}</h3>
                 `;
                 div.onclick = () => {
+                    playSound('pop');
                     gameState.county = county;
                     goToStep(2);
                 };
@@ -758,6 +904,7 @@
         }
 
         function modifyHousehold(type, change) {
+            playSound('click');
             if (type === 'adults') {
                 gameState.adults += change;
                 if(gameState.adults < 1) gameState.adults = 1;
@@ -782,8 +929,12 @@
 
             const emojiContainer = document.getElementById('household-emojis');
             let emojis = '';
-            for(let i=0; i<gameState.adults; i++) emojis += '👩 ';
-            for(let i=0; i<gameState.children; i++) emojis += '👧 ';
+            for(let i=0; i<gameState.adults; i++) {
+                emojis += '<span title="Adult">👤</span> ';
+            }
+            for(let i=0; i<gameState.children; i++) {
+                emojis += '<span class="text-4xl opacity-75" title="Child">👤</span> ';
+            }
             emojiContainer.innerHTML = emojis;
 
             let aStr = gameState.adults === 1 ? "1 Adult" : "2 Adults";
@@ -811,44 +962,74 @@
 
         function renderResults() {
             const data = gameState.currentData;
+            const userMonthlyIncome = gameState.userBudget.income;
             
             animateValue("res-hourly", 0, data.hourly, 800, true);
             animateValue("res-annual", 0, data.annual, 800);
             animateValue("res-monthly", 0, data.monthly, 800);
-            animateValue("res-weekly", 0, data.annual/52, 800);
+            animateValue("res-user-income", 0, userMonthlyIncome, 800);
 
             const container = document.getElementById('expense-cards-container');
             container.innerHTML = '';
 
             const keys = ['housing', 'childcare', 'food', 'transportation', 'health', 'taxes'];
             keys.forEach((k, idx) => {
-                const amount = data[k];
-                const pct = Math.round((amount / data.monthly) * 100) || 0;
-                const info = EXPENSE_INFO[k];
+                const reqAmount = data[k];
+                const userAmount = gameState.userBudget[k] || 0;
                 
+                const pct = Math.round((reqAmount / data.monthly) * 100) || 0;
+                const info = EXPENSE_INFO[k];
                 const delay = idx * 100;
 
+                let diffText, diffColor, diffIcon;
+                if(userAmount > reqAmount) {
+                    diffText = `↑ $${Math.round(userAmount - reqAmount).toLocaleString()} OVER NEED`;
+                    diffColor = 'text-slate-500'; diffIcon = '⚪';
+                } else if(userAmount < reqAmount) {
+                    diffText = `↓ $${Math.round(reqAmount - userAmount).toLocaleString()} UNDER NEED`;
+                    diffColor = 'text-slate-500'; diffIcon = '⚪';
+                } else {
+                    diffText = `EXACT MATCH`;
+                    diffColor = 'text-slate-500'; diffIcon = '⚪';
+                }
+
                 const card = document.createElement('div');
-                card.className = "bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-sm interactive-card flex flex-col justify-between cursor-pointer group hover:border-orange-400 transition-all relative overflow-hidden";
+                card.className = "bg-white rounded-2xl border-2 border-slate-200 shadow-sm interactive-card flex flex-col justify-between cursor-pointer group hover:border-orange-400 transition-all relative overflow-hidden";
                 card.style.animation = `fadeIn 0.5s ease forwards ${delay}ms`;
                 card.style.opacity = 0;
                 
                 card.innerHTML = `
-                    <div class="flex justify-between items-start mb-3 md:mb-4">
-                        <div class="text-3xl md:text-4xl p-2 md:p-3 rounded-xl bg-slate-50 group-hover:scale-110 transition-transform">${info.icon}</div>
-                        <span class="text-xs md:text-sm font-black px-3 py-1.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200 shadow-sm shadow-blue-100">${pct}% of Income</span>
+                    <div class="p-5 flex-grow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="text-4xl p-3 rounded-xl bg-slate-50 group-hover:scale-110 transition-transform">${info.icon}</div>
+                            <span class="text-xs font-black px-3 py-1.5 rounded-md bg-slate-800 text-white shadow-sm">${pct}% of Income</span>
+                        </div>
+                        <h4 class="font-black text-xl text-slate-800 uppercase tracking-wide border-b border-slate-100 pb-2">${info.name}</h4>
+                        
+                        <div class="mt-3">
+                            <div class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider">Living Wage Need</div>
+                            <div class="text-2xl font-bold text-slate-700">$${Math.round(reqAmount).toLocaleString()}<span class="text-sm font-medium text-slate-400">/mo</span></div>
+                        </div>
+                        
+                        <div class="mt-3 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <div class="text-[10px] font-bold text-blue-500 uppercase tracking-wider">Your Budget</div>
+                                    <div class="text-lg font-bold text-blue-800">$${Math.round(userAmount).toLocaleString()}<span class="text-xs font-medium opacity-70">/mo</span></div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] font-bold ${diffColor}">${diffIcon} ${diffText}</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <h4 class="font-black text-lg md:text-xl text-slate-800 uppercase tracking-wide">${info.name}</h4>
-                        <p class="text-2xl md:text-3xl font-bold text-slate-600 mt-1 md:mt-2">$${Math.round(amount).toLocaleString()}<span class="text-sm md:text-lg text-slate-400 font-medium">/mo</span></p>
-                    </div>
-                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-orange-500 font-bold text-xs md:text-sm opacity-70 group-hover:opacity-100 transition-opacity">
-                        <span>See Details</span>
+                    <div class="bg-slate-50 px-5 py-3 border-t border-slate-100 flex items-center justify-between text-orange-500 font-bold text-xs md:text-sm opacity-70 group-hover:opacity-100 group-hover:bg-orange-50 transition-all">
+                        <span>See Official Details</span>
                         <span class="text-lg">→</span>
                     </div>
                 `;
 
-                card.onclick = () => showExpenseModal(k, amount, pct, data.annual);
+                card.onclick = () => showExpenseModal(k, reqAmount, pct, data.annual);
                 container.appendChild(card);
             });
         }
@@ -858,12 +1039,14 @@
             gameState.customTransit = gameState.currentData.transportation;
             
             const incSlider = document.getElementById('slider-income');
-            incSlider.value = gameState.customIncome;
-            document.getElementById('slider-income-val').innerText = formatMoney(gameState.customIncome);
+            if(incSlider) incSlider.value = gameState.customIncome;
+            const incVal = document.getElementById('slider-income-val');
+            if(incVal) incVal.innerText = formatMoney(gameState.customIncome);
             
             const transSlider = document.getElementById('slider-transit');
-            transSlider.value = gameState.customTransit;
-            document.getElementById('slider-transit-val').innerText = formatMoney(gameState.customTransit) + "/mo";
+            if(transSlider) transSlider.value = gameState.customTransit;
+            const transVal = document.getElementById('slider-transit-val');
+            if(transVal) transVal.innerText = formatMoney(gameState.customTransit) + "/mo";
         }
 
         function updatePaycheckVisual() {
@@ -873,7 +1056,6 @@
             let trans = gameState.customTransit;
             let otherFixed = data.housing + data.childcare + data.food + data.health + data.other + data.taxes;
             let totalExpenses = otherFixed + trans;
-            
             let moneyLeft = customMonthlyIncome - totalExpenses;
 
             document.getElementById('viz-income-text').innerText = formatMoney(customMonthlyIncome) + "/MO";
@@ -894,15 +1076,13 @@
             exps.forEach(exp => {
                 if(exp.v <= 0) return;
                 let pct = (exp.v / customMonthlyIncome) * 100;
-                
                 let visualPct = pct;
                 if (cumulativePct + visualPct > 100) visualPct = 100 - cumulativePct;
                 if (visualPct <= 0) return;
-                
                 cumulativePct += visualPct;
 
                 const div = document.createElement('div');
-                div.className = `h-full ${EXPENSE_INFO[exp.k].tailwind} transition-all duration-500`;
+                div.className = `h-full border-r border-white/20 ${EXPENSE_INFO[exp.k].tailwind} transition-all duration-500`;
                 div.style.width = `${visualPct}%`;
                 div.title = `${EXPENSE_INFO[exp.k].name}: ${formatMoney(exp.v)}/mo`;
                 bar.appendChild(div);
@@ -956,16 +1136,32 @@
                 if(isMe) tr.className = "bg-orange-50 font-bold border-l-4 border-orange-500";
                 
                 tr.innerHTML = `
-                    <td class="p-3 md:p-4 truncate">${item.county.replace(' County', '')} ${isMe ? ' <span class="text-[10px] md:text-xs bg-orange-200 text-orange-800 px-1 md:px-2 py-0.5 md:py-1 rounded ml-1 md:ml-2">YOU</span>' : ''}</td>
+                    <td class="p-3 md:p-4 truncate">${item.county.replace(' County', '')} ${isMe ? ' <span class="text-[10px] md:text-xs bg-orange-200 text-orange-800 px-1 md:px-2 py-0.5 md:py-1 rounded ml-1 md:ml-2">SELECTED</span>' : ''}</td>
                     <td class="p-3 md:p-4">$${item.hourly.toFixed(2)}</td>
                     <td class="p-3 md:p-4">$${Math.round(item.annual).toLocaleString()}</td>
                     <td class="p-3 md:p-4">$${Math.round(item.housing).toLocaleString()}</td>
                 `;
                 tbody.appendChild(tr);
             });
+
+            // Insert User Inputted Budget Row
+            const userAnnual = gameState.userBudget.income * 12;
+            const userHourly = userAnnual / (gameState.workingAdults * 2080);
+            const userTr = document.createElement('tr');
+            userTr.className = "bg-blue-50 font-bold border-l-4 border-blue-500 text-blue-900";
+            userTr.innerHTML = `
+                <td class="p-3 md:p-4 truncate">👤 YOUR BUDGET</td>
+                <td class="p-3 md:p-4">$${userHourly > 0 ? userHourly.toFixed(2) : '0.00'}</td>
+                <td class="p-3 md:p-4">$${Math.round(userAnnual).toLocaleString()}</td>
+                <td class="p-3 md:p-4">$${Math.round(gameState.userBudget.housing).toLocaleString()}</td>
+            `;
+            
+            // Prepend User Row at the top to make it prominent
+            tbody.insertBefore(userTr, tbody.firstChild);
         }
 
         function showExpenseModal(key, monthlyAmt, pct, annualIncome) {
+            playSound('pop');
             const info = EXPENSE_INFO[key];
             document.getElementById('modal-icon').innerText = info.icon;
             document.getElementById('modal-title').innerText = info.name;
@@ -996,9 +1192,8 @@
                 if(isFloat) obj.innerHTML = current.toFixed(2);
                 else obj.innerHTML = Math.round(current).toLocaleString();
                 
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                } else {
+                if (progress < 1) window.requestAnimationFrame(step);
+                else {
                     if(isFloat) obj.innerHTML = end.toFixed(2);
                     else obj.innerHTML = Math.round(end).toLocaleString();
                 }
@@ -1006,7 +1201,6 @@
             window.requestAnimationFrame(step);
         }
 
-        // Start safely after DOM completely loads
         window.onload = () => {
             initGame();
         };
