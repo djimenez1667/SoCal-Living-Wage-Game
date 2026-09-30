@@ -91,11 +91,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes pulse-soft {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
         /* Custom Sliders */
         input[type=range] {
             -webkit-appearance: none;
@@ -167,19 +162,19 @@
                 <span class="text-sunset sm:hidden inline-block">SoCal Game</span>
             </div>
             
-            <!-- Progress Bar (6 Steps now) -->
+            <!-- Progress Bar (6 Steps) -->
             <div class="flex items-center w-full max-w-[150px] sm:max-w-[250px] md:max-w-sm mx-auto px-2">
-                <div id="prog-dot-1" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-3 md:h-3 rounded-full bg-gray-300 shrink-0"></div>
+                <div id="prog-dot-1" class="step-dot w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-gray-300 shrink-0"></div>
                 <div id="prog-line-1" class="step-line flex-1 h-1 bg-gray-300 mx-1 rounded"></div>
-                <div id="prog-dot-2" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-3 md:h-3 rounded-full bg-gray-300 shrink-0"></div>
+                <div id="prog-dot-2" class="step-dot w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-gray-300 shrink-0"></div>
                 <div id="prog-line-2" class="step-line flex-1 h-1 bg-gray-300 mx-1 rounded"></div>
-                <div id="prog-dot-3" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-3 md:h-3 rounded-full bg-gray-300 shrink-0"></div>
+                <div id="prog-dot-3" class="step-dot w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-gray-300 shrink-0"></div>
                 <div id="prog-line-3" class="step-line flex-1 h-1 bg-gray-300 mx-1 rounded"></div>
-                <div id="prog-dot-4" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-3 md:h-3 rounded-full bg-gray-300 shrink-0"></div>
+                <div id="prog-dot-4" class="step-dot w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-gray-300 shrink-0"></div>
                 <div id="prog-line-4" class="step-line flex-1 h-1 bg-gray-300 mx-1 rounded"></div>
-                <div id="prog-dot-5" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-3 md:h-3 rounded-full bg-gray-300 shrink-0"></div>
+                <div id="prog-dot-5" class="step-dot w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-gray-300 shrink-0"></div>
                 <div id="prog-line-5" class="step-line flex-1 h-1 bg-gray-300 mx-1 rounded"></div>
-                <div id="prog-dot-6" class="step-dot w-2 h-2 sm:w-3 sm:h-3 md:w-3 md:h-3 rounded-full bg-gray-300 shrink-0"></div>
+                <div id="prog-dot-6" class="step-dot w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-gray-300 shrink-0"></div>
             </div>
             
             <div class="flex items-center gap-2 md:gap-4">
@@ -279,7 +274,6 @@
                     <!-- Visual Representation -->
                     <div class="bg-slate-50 rounded-2xl p-6 text-center border border-slate-200 shadow-inner min-h-[200px] md:min-h-[250px] flex flex-col justify-center">
                         <h3 class="text-xs md:text-sm font-bold text-slate-400 tracking-widest mb-3 md:mb-4">YOUR HOUSEHOLD</h3>
-                        <!-- Genderless Emojis Updated Here -->
                         <div id="household-emojis" class="text-5xl md:text-6xl flex justify-center flex-wrap gap-2 mb-4 md:mb-6 min-h-[70px] md:min-h-[80px] leading-tight">
                             <!-- Emojis injected via JS -->
                         </div>
@@ -301,12 +295,23 @@
             <div class="text-center mb-6 md:mb-10 shrink-0 pt-4 md:pt-0">
                 <h2 class="text-xs md:text-sm font-bold text-slate-500 tracking-widest mb-1 md:mb-2">STEP 3</h2>
                 <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-800">Your Current Budget</h1>
-                <p class="text-base sm:text-lg text-slate-600 mt-2 md:mt-4">Estimate your current monthly income and expenses to see how it compares.</p>
+                <p class="text-base sm:text-lg text-slate-600 mt-2 md:mt-4">Estimate your monthly income and variable expenses to see how it compares.</p>
             </div>
 
             <div class="glass-card p-6 md:p-10 w-full mb-10">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                     
+                    <!-- Notice about Automated Fixed Expenses -->
+                    <div class="md:col-span-2 bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-900 text-xs md:text-sm flex items-start gap-3 shadow-sm">
+                        <span class="text-2xl shrink-0">💡</span>
+                        <div>
+                            <p class="font-bold mb-1">Automated Fixed Expenses</p>
+                            <p class="text-amber-800 leading-relaxed">
+                                Costs for <b>Housing (Rent/Mortgage)</b>, <b>Health Care</b>, and <b>Childcare</b> will be calculated automatically based on official living-wage data for your chosen county and household profile.
+                            </p>
+                        </div>
+                    </div>
+
                     <!-- Income Input -->
                     <div class="md:col-span-2 mb-2">
                         <label class="block text-sm md:text-base font-black text-slate-700 mb-2 uppercase tracking-wide">Monthly Take-Home Income</label>
@@ -316,15 +321,7 @@
                         </div>
                     </div>
 
-                    <!-- Expense Inputs -->
-                    <div class="space-y-2">
-                        <label class="block text-xs md:text-sm font-bold text-slate-600 uppercase">Housing (Rent/Mortgage)</label>
-                        <div class="budget-input-wrapper bg-white border border-slate-200 rounded-lg p-3 flex items-center transition-colors">
-                            <span class="text-lg font-bold text-slate-400 mr-2">$</span>
-                            <input type="number" id="user-input-housing" class="w-full text-lg font-bold text-slate-700 bg-transparent outline-none" placeholder="0">
-                        </div>
-                    </div>
-
+                    <!-- Variable Expense Inputs -->
                     <div class="space-y-2">
                         <label class="block text-xs md:text-sm font-bold text-slate-600 uppercase">Food (Groceries & Eating Out)</label>
                         <div class="budget-input-wrapper bg-white border border-slate-200 rounded-lg p-3 flex items-center transition-colors">
@@ -341,23 +338,7 @@
                         </div>
                     </div>
 
-                    <div class="space-y-2">
-                        <label class="block text-xs md:text-sm font-bold text-slate-600 uppercase">Health Care (Insurance, Meds)</label>
-                        <div class="budget-input-wrapper bg-white border border-slate-200 rounded-lg p-3 flex items-center transition-colors">
-                            <span class="text-lg font-bold text-slate-400 mr-2">$</span>
-                            <input type="number" id="user-input-health" class="w-full text-lg font-bold text-slate-700 bg-transparent outline-none" placeholder="0">
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="block text-xs md:text-sm font-bold text-slate-600 uppercase">Childcare (If applicable)</label>
-                        <div class="budget-input-wrapper bg-white border border-slate-200 rounded-lg p-3 flex items-center transition-colors">
-                            <span class="text-lg font-bold text-slate-400 mr-2">$</span>
-                            <input type="number" id="user-input-childcare" class="w-full text-lg font-bold text-slate-700 bg-transparent outline-none" placeholder="0">
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
+                    <div class="space-y-2 md:col-span-2">
                         <label class="block text-xs md:text-sm font-bold text-slate-600 uppercase">Estimated Monthly Taxes</label>
                         <div class="budget-input-wrapper bg-white border border-slate-200 rounded-lg p-3 flex items-center transition-colors">
                             <span class="text-lg font-bold text-slate-400 mr-2">$</span>
@@ -483,7 +464,7 @@
                             <span class="text-2xl md:text-3xl">💼</span>
                             <h4 class="font-bold text-lg md:text-xl">Change Income</h4>
                         </div>
-                        <p class="text-xs md:text-sm text-slate-600 mb-4 md:mb-6">What if you earned a different amount than the estimated living wage?</p>
+                        <p class="text-xs md:text-sm text-slate-600 mb-4 md:mb-6">What if you earned a different amount than your stated or required income?</p>
                     </div>
                     <div>
                         <div class="flex justify-between font-bold text-sm md:text-base text-slate-700 mb-2">
@@ -492,7 +473,7 @@
                         </div>
                         <input type="range" id="slider-income" min="30000" max="150000" step="1000" value="75000" class="w-full touch-pan-x">
                         <div class="mt-4 text-center">
-                            <button id="btn-reset-income" class="text-xs md:text-sm font-semibold text-blue-600 hover:underline">Reset to Living Wage</button>
+                            <button id="btn-reset-income" class="text-xs md:text-sm font-semibold text-blue-600 hover:underline">Reset Income</button>
                         </div>
                     </div>
                 </div>
@@ -504,16 +485,16 @@
                             <span class="text-2xl md:text-3xl">🚗</span>
                             <h4 class="font-bold text-lg md:text-xl">Cut Transit Costs</h4>
                         </div>
-                        <p class="text-xs md:text-sm text-slate-600 mb-4 md:mb-6">What if you took the bus or carpooled?</p>
+                        <p class="text-xs md:text-sm text-slate-600 mb-4 md:mb-6">What if you took public transit or carpooled to lower your transportation expenses?</p>
                     </div>
                     <div>
                         <div class="flex justify-between font-bold text-sm md:text-base text-slate-700 mb-2">
                             <span>$0</span>
                             <span id="slider-transit-val" class="text-green-500">$500</span>
                         </div>
-                        <input type="range" id="slider-transit" min="0" max="1500" step="50" value="500" class="w-full touch-pan-x">
+                        <input type="range" id="slider-transit" min="0" max="1500" step="25" value="500" class="w-full touch-pan-x">
                         <div class="mt-4 text-center">
-                            <button id="btn-reset-transit" class="text-xs md:text-sm font-semibold text-blue-600 hover:underline">Reset to Average Cost</button>
+                            <button id="btn-reset-transit" class="text-xs md:text-sm font-semibold text-blue-600 hover:underline">Reset Transit</button>
                         </div>
                     </div>
                 </div>
@@ -525,16 +506,16 @@
                             <span class="text-2xl md:text-3xl">🛒</span>
                             <h4 class="font-bold text-lg md:text-xl">Cut Food Costs</h4>
                         </div>
-                        <p class="text-xs md:text-sm text-slate-600 mb-4 md:mb-6">What if you bought cheaper groceries or dined out less?</p>
+                        <p class="text-xs md:text-sm text-slate-600 mb-4 md:mb-6">What if you adjusted your grocery budget or dined out less?</p>
                     </div>
                     <div>
                         <div class="flex justify-between font-bold text-sm md:text-base text-slate-700 mb-2">
                             <span>$0</span>
                             <span id="slider-food-val" class="text-yellow-500">$500</span>
                         </div>
-                        <input type="range" id="slider-food" min="0" max="1500" step="50" value="500" class="w-full touch-pan-x">
+                        <input type="range" id="slider-food" min="0" max="1500" step="25" value="500" class="w-full touch-pan-x">
                         <div class="mt-4 text-center">
-                            <button id="btn-reset-food" class="text-xs md:text-sm font-semibold text-blue-600 hover:underline">Reset to Average Cost</button>
+                            <button id="btn-reset-food" class="text-xs md:text-sm font-semibold text-blue-600 hover:underline">Reset Food</button>
                         </div>
                     </div>
                 </div>
@@ -552,7 +533,7 @@
             <div class="text-center mb-6 md:mb-10 shrink-0 pt-4 md:pt-0">
                 <h2 class="text-xs md:text-sm font-bold text-slate-500 tracking-widest mb-1 md:mb-2">STEP 6</h2>
                 <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-800">Compare Regions</h1>
-                <p class="text-base sm:text-lg text-slate-600 mt-2 md:mt-4">How does your county (and your inputted budget) stack up?</p>
+                <p class="text-base sm:text-lg text-slate-600 mt-2 md:mt-4">How does your county (and your combined budget) stack up?</p>
             </div>
 
             <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden mb-8 md:mb-10 w-full">
@@ -615,7 +596,7 @@
                 <span>Educational Prototype</span>
             </p>
             <p class="max-w-3xl mx-auto leading-relaxed px-2 text-[10px] sm:text-xs">
-                This interactive experience uses generated demonstration values representing county-level living-wage estimates to illustrate basic costs a household may face in Southern California. Estimates are intended for educational purposes and are not personalized financial advice. Source data structure based on the MIT/Living Wage Institute Living Wage Calculator (2026 concept). <b>Source data must be verified and updated before public deployment.</b>
+                This interactive experience uses generated demonstration values representing county-level living-wage estimates to illustrate basic costs a household may face in Southern California. Estimates are intended for educational purposes and are not personalized financial advice. Source data structure based on the MIT/Living Wage Institute Living Wage Calculator.
             </p>
         </div>
     </footer>
@@ -627,7 +608,7 @@
     <script>
         /**
          * SO CAL LIVING-WAGE GAME
-         * Main Game Logic
+         * Main Game Logic & Data Handler
          */
 
         // 1. DATA STRUCTURE (DEMO DATA)
@@ -696,19 +677,19 @@
             currentData: null,
             customIncome: null, customTransit: null, customFood: null,
             soundEnabled: false,
-            // User inputted budget
+            // User inputted budget (only stores student-entered categories)
             userBudget: {
-                income: 0, housing: 0, food: 0, transportation: 0, health: 0, childcare: 0, taxes: 0
+                income: 0, food: 0, transportation: 0, taxes: 0
             }
         };
 
         const EXPENSE_INFO = {
-            childcare: { name: "Childcare", icon: "🧸", color: "var(--c-childcare)", tailwind: "bg-purple-500", desc: "Estimated monthly costs for daycare or preschool for children." },
-            housing: { name: "Housing", icon: "🏠", color: "var(--c-housing)", tailwind: "bg-orange-500", desc: "Fair market rent including basic utilities (water, gas, electricity)." },
+            childcare: { name: "Childcare", icon: "🧸", color: "var(--c-childcare)", tailwind: "bg-purple-500", desc: "Estimated monthly costs for daycare or preschool (Automated from Living Wage data)." },
+            housing: { name: "Housing", icon: "🏠", color: "var(--c-housing)", tailwind: "bg-orange-500", desc: "Fair market rent including basic utilities (Automated from Living Wage data)." },
             taxes: { name: "Taxes", icon: "🏛️", color: "var(--c-taxes)", tailwind: "bg-blue-500", desc: "Estimated federal, state, and local taxes based on income bracket." },
             transportation: { name: "Transit", icon: "🚗", color: "var(--c-transportation)", tailwind: "bg-green-500", desc: "Costs associated with owning a car, insurance, gas, or public transit." },
             food: { name: "Food", icon: "🛒", color: "var(--c-food)", tailwind: "bg-yellow-500", desc: "USDA low-cost food plan estimates for preparing meals at home." },
-            health: { name: "Health", icon: "⚕️", color: "var(--c-health)", tailwind: "bg-rose-500", desc: "Typical out-of-pocket health expenses and insurance premiums." }
+            health: { name: "Health", icon: "⚕️", color: "var(--c-health)", tailwind: "bg-rose-500", desc: "Typical out-of-pocket health expenses and insurance premiums (Automated from Living Wage data)." }
         };
 
         // 3. SOUND ENGINE
@@ -770,8 +751,19 @@
                 }
             });
             
-            safeAdd('btn-survive', 'click', () => { playSound('woosh'); resetSliders(); updatePaycheckVisual(); goToStep(5); });
-            safeAdd('btn-compare-options', 'click', () => { playSound('woosh'); renderCompareTable(); goToStep(6); });
+            safeAdd('btn-survive', 'click', () => { 
+                playSound('woosh'); 
+                resetSliders(); 
+                updatePaycheckVisual(); 
+                goToStep(5); 
+            });
+
+            safeAdd('btn-compare-options', 'click', () => { 
+                playSound('woosh'); 
+                renderCompareTable(); 
+                goToStep(6); 
+            });
+
             safeAdd('btn-reset', 'click', () => { playSound('error'); resetGame(); });
             
             safeAdd('btn-sound-toggle', 'click', (e) => {
@@ -801,30 +793,33 @@
             document.querySelectorAll('.modal-content').forEach(el => el.addEventListener('click', (e) => e.stopPropagation()));
             document.querySelectorAll('.modal-overlay').forEach(el => el.addEventListener('click', (e) => { if (e.target === el) el.classList.remove('active'); }));
 
+            // Slider input listeners (Synchronized in real-time)
             safeAdd('slider-income', 'input', (e) => {
-                gameState.customIncome = parseInt(e.target.value);
+                gameState.customIncome = parseInt(e.target.value) || 30000;
                 const sliderVal = document.getElementById('slider-income-val');
                 if (sliderVal) sliderVal.innerText = formatMoney(gameState.customIncome);
                 updatePaycheckVisual();
             });
 
             safeAdd('slider-transit', 'input', (e) => {
-                gameState.customTransit = parseInt(e.target.value);
+                gameState.customTransit = parseInt(e.target.value) || 0;
                 const transitVal = document.getElementById('slider-transit-val');
                 if (transitVal) transitVal.innerText = formatMoney(gameState.customTransit) + "/mo";
                 updatePaycheckVisual();
             });
 
             safeAdd('slider-food', 'input', (e) => {
-                gameState.customFood = parseInt(e.target.value);
+                gameState.customFood = parseInt(e.target.value) || 0;
                 const foodVal = document.getElementById('slider-food-val');
                 if (foodVal) foodVal.innerText = formatMoney(gameState.customFood) + "/mo";
                 updatePaycheckVisual();
             });
 
+            // Slider reset button handlers
             safeAdd('btn-reset-income', 'click', () => {
                 if (!gameState.currentData) return;
-                gameState.customIncome = gameState.currentData.annual;
+                const hasUserIncome = gameState.userBudget.income > 0;
+                gameState.customIncome = hasUserIncome ? (gameState.userBudget.income * 12) : gameState.currentData.annual;
                 const slider = document.getElementById('slider-income');
                 if (slider) slider.value = gameState.customIncome;
                 const sliderVal = document.getElementById('slider-income-val');
@@ -834,8 +829,8 @@
 
             safeAdd('btn-reset-transit', 'click', () => {
                 if (!gameState.currentData) return;
-                const hasUserBudget = gameState.userBudget.income > 0 || gameState.userBudget.transportation > 0;
-                gameState.customTransit = hasUserBudget ? gameState.userBudget.transportation : gameState.currentData.transportation;
+                const hasUserTransit = gameState.userBudget.transportation > 0;
+                gameState.customTransit = hasUserTransit ? gameState.userBudget.transportation : gameState.currentData.transportation;
                 const slider = document.getElementById('slider-transit');
                 if (slider) slider.value = gameState.customTransit;
                 const transitVal = document.getElementById('slider-transit-val');
@@ -845,8 +840,8 @@
 
             safeAdd('btn-reset-food', 'click', () => {
                 if (!gameState.currentData) return;
-                const hasUserBudget = gameState.userBudget.income > 0 || gameState.userBudget.food > 0;
-                gameState.customFood = hasUserBudget ? (gameState.userBudget.food || 0) : gameState.currentData.food;
+                const hasUserFood = gameState.userBudget.food > 0;
+                gameState.customFood = hasUserFood ? gameState.userBudget.food : gameState.currentData.food;
                 const slider = document.getElementById('slider-food');
                 if (slider) slider.value = gameState.customFood;
                 const foodVal = document.getElementById('slider-food-val');
@@ -894,10 +889,10 @@
             gameState.workingAdults = 1;
             
             gameState.userBudget = {
-                income: 0, housing: 0, food: 0, transportation: 0, health: 0, childcare: 0, taxes: 0
+                income: 0, food: 0, transportation: 0, taxes: 0
             };
             
-            ['income', 'housing', 'food', 'transportation', 'health', 'childcare', 'taxes'].forEach(id => {
+            ['income', 'food', 'transportation', 'taxes'].forEach(id => {
                 const el = document.getElementById('user-input-' + id);
                 if(el) el.value = '';
             });
@@ -911,11 +906,8 @@
             const getVal = (id) => Number(document.getElementById('user-input-' + id)?.value) || 0;
             gameState.userBudget = {
                 income: getVal('income'),
-                housing: getVal('housing'),
                 food: getVal('food'),
                 transportation: getVal('transportation'),
-                health: getVal('health'),
-                childcare: getVal('childcare'),
                 taxes: getVal('taxes')
             };
         }
@@ -1027,17 +1019,24 @@
             const keys = ['housing', 'childcare', 'food', 'transportation', 'health', 'taxes'];
             keys.forEach((k, idx) => {
                 const reqAmount = data[k];
-                const userAmount = gameState.userBudget[k] || 0;
+                
+                // Categories automated from Living Wage data: Housing, Childcare, Health Care
+                const isAutomated = ['housing', 'childcare', 'health'].includes(k);
+                const userAmount = isAutomated ? reqAmount : (gameState.userBudget[k] || 0);
                 
                 const pct = Math.round((reqAmount / data.monthly) * 100) || 0;
                 const info = EXPENSE_INFO[k];
                 const delay = idx * 100;
 
                 let diffText, diffColor, diffIcon;
-                if(userAmount > reqAmount) {
+                if (isAutomated) {
+                    diffText = `AUTOMATED VALUE`;
+                    diffColor = 'text-amber-600 font-bold'; 
+                    diffIcon = '⚡';
+                } else if (userAmount > reqAmount) {
                     diffText = `↑ $${Math.round(userAmount - reqAmount).toLocaleString()} OVER NEED`;
                     diffColor = 'text-slate-500'; diffIcon = '⚪';
-                } else if(userAmount < reqAmount) {
+                } else if (userAmount < reqAmount) {
                     diffText = `↓ $${Math.round(reqAmount - userAmount).toLocaleString()} UNDER NEED`;
                     diffColor = 'text-slate-500'; diffIcon = '⚪';
                 } else {
@@ -1066,8 +1065,8 @@
                         <div class="mt-3 bg-slate-50 p-2 rounded-lg border border-slate-100">
                             <div class="flex justify-between items-end">
                                 <div>
-                                    <div class="text-[10px] font-bold text-blue-500 uppercase tracking-wider">Your Budget</div>
-                                    <div class="text-lg font-bold text-blue-800">$${Math.round(userAmount).toLocaleString()}<span class="text-xs font-medium opacity-70">/mo</span></div>
+                                    <div class="text-[10px] font-bold ${isAutomated ? 'text-amber-600' : 'text-blue-500'} uppercase tracking-wider">${isAutomated ? 'Auto Living-Wage' : 'Your Budget'}</div>
+                                    <div class="text-lg font-bold ${isAutomated ? 'text-slate-800' : 'text-blue-800'}">$${Math.round(userAmount).toLocaleString()}<span class="text-xs font-medium opacity-70">/mo</span></div>
                                 </div>
                                 <div class="text-right">
                                     <div class="text-[10px] font-bold ${diffColor}">${diffIcon} ${diffText}</div>
@@ -1087,61 +1086,86 @@
         }
 
         function resetSliders() {
-            const hasUserBudget = gameState.userBudget.income > 0 || gameState.userBudget.housing > 0;
+            if (!gameState.currentData) return;
+
+            const hasUserIncome = gameState.userBudget.income > 0;
+            const hasUserTransit = gameState.userBudget.transportation > 0;
+            const hasUserFood = gameState.userBudget.food > 0;
             
-            gameState.customIncome = hasUserBudget ? (gameState.userBudget.income * 12) : gameState.currentData.annual;
-            gameState.customTransit = hasUserBudget ? (gameState.userBudget.transportation || 0) : gameState.currentData.transportation;
-            gameState.customFood = hasUserBudget ? (gameState.userBudget.food || 0) : gameState.currentData.food;
+            // Income: User annual income or Living Wage annual need
+            gameState.customIncome = hasUserIncome ? (gameState.userBudget.income * 12) : gameState.currentData.annual;
+            // Transit: User monthly transit or Living Wage transit need
+            gameState.customTransit = hasUserTransit ? gameState.userBudget.transportation : gameState.currentData.transportation;
+            // Food: User monthly food or Living Wage food need
+            gameState.customFood = hasUserFood ? gameState.userBudget.food : gameState.currentData.food;
             
+            // Income slider calibration
             const incSlider = document.getElementById('slider-income');
             if(incSlider) {
-                if(gameState.customIncome > parseInt(incSlider.max)) incSlider.max = gameState.customIncome + 50000;
+                const maxInc = Math.max(150000, Math.ceil(gameState.customIncome / 10000) * 10000 + 20000);
+                incSlider.min = 30000;
+                incSlider.max = maxInc;
+                incSlider.step = 1000;
                 incSlider.value = gameState.customIncome;
             }
             const incVal = document.getElementById('slider-income-val');
             if(incVal) incVal.innerText = formatMoney(gameState.customIncome);
             
+            // Transit slider calibration
             const transSlider = document.getElementById('slider-transit');
             if(transSlider) {
-                if(gameState.customTransit > parseInt(transSlider.max)) transSlider.max = gameState.customTransit + 500;
+                const maxTrans = Math.max(1500, Math.ceil((gameState.customTransit + 300) / 100) * 100);
+                transSlider.min = 0;
+                transSlider.max = maxTrans;
+                transSlider.step = 25;
                 transSlider.value = gameState.customTransit;
             }
             const transVal = document.getElementById('slider-transit-val');
             if(transVal) transVal.innerText = formatMoney(gameState.customTransit) + "/mo";
             
+            // Food slider calibration
             const foodSlider = document.getElementById('slider-food');
             if(foodSlider) {
-                if(gameState.customFood > parseInt(foodSlider.max)) foodSlider.max = gameState.customFood + 500;
+                const maxFood = Math.max(1500, Math.ceil((gameState.customFood + 300) / 100) * 100);
+                foodSlider.min = 0;
+                foodSlider.max = maxFood;
+                foodSlider.step = 25;
                 foodSlider.value = gameState.customFood;
             }
             const foodVal = document.getElementById('slider-food-val');
             if(foodVal) foodVal.innerText = formatMoney(gameState.customFood) + "/mo";
             
+            // Button label updates
             const btnResetIncome = document.getElementById('btn-reset-income');
-            if(btnResetIncome) btnResetIncome.innerText = hasUserBudget ? "Reset to My Budget" : "Reset to Living Wage";
+            if(btnResetIncome) btnResetIncome.innerText = hasUserIncome ? "Reset to My Budget" : "Reset to Living Wage";
             
             const btnResetTransit = document.getElementById('btn-reset-transit');
-            if(btnResetTransit) btnResetTransit.innerText = hasUserBudget ? "Reset to My Budget" : "Reset to Average Cost";
+            if(btnResetTransit) btnResetTransit.innerText = hasUserTransit ? "Reset to My Budget" : "Reset to Average";
 
             const btnResetFood = document.getElementById('btn-reset-food');
-            if(btnResetFood) btnResetFood.innerText = hasUserBudget ? "Reset to My Budget" : "Reset to Average Cost";
+            if(btnResetFood) btnResetFood.innerText = hasUserFood ? "Reset to My Budget" : "Reset to Average";
         }
 
         function updatePaycheckVisual() {
             const data = gameState.currentData;
+            if (!data) return;
+
             const customMonthlyIncome = gameState.customIncome / 12;
             
-            const hasUserBudget = gameState.userBudget.income > 0 || gameState.userBudget.housing > 0;
+            // AUTOMATED EXPENSES (Dynamic living-wage data)
+            let bHousing = data.housing;
+            let bChildcare = data.childcare;
+            let bHealth = data.health;
             
-            let bHousing = hasUserBudget ? (gameState.userBudget.housing || 0) : data.housing;
-            let bTaxes = hasUserBudget ? (gameState.userBudget.taxes || 0) : data.taxes;
-            let bChildcare = hasUserBudget ? (gameState.userBudget.childcare || 0) : data.childcare;
-            let bHealth = hasUserBudget ? (gameState.userBudget.health || 0) : data.health;
+            // STUDENT / USER-ENTERED & SLIDER-DRIVEN EXPENSES
+            let hasUserTaxes = gameState.userBudget.income > 0 && gameState.userBudget.taxes > 0;
+            let bTaxes = hasUserTaxes ? gameState.userBudget.taxes : data.taxes;
             
             let trans = gameState.customTransit;
             let foodCost = gameState.customFood;
-            let otherFixed = bHousing + bChildcare + bHealth + bTaxes;
-            let totalExpenses = otherFixed + trans + foodCost;
+
+            // Total combined expenses
+            let totalExpenses = bHousing + bChildcare + bHealth + bTaxes + trans + foodCost;
             let moneyLeft = customMonthlyIncome - totalExpenses;
 
             document.getElementById('viz-income-text').innerText = formatMoney(customMonthlyIncome) + "/MO";
@@ -1150,12 +1174,12 @@
             bar.innerHTML = '';
             
             const exps = [
-                {k: 'housing', v: bHousing},
-                {k: 'taxes', v: bTaxes},
-                {k: 'childcare', v: bChildcare},
-                {k: 'transportation', v: trans},
-                {k: 'food', v: foodCost},
-                {k: 'health', v: bHealth}
+                {k: 'housing', v: bHousing, auto: true},
+                {k: 'taxes', v: bTaxes, auto: !hasUserTaxes},
+                {k: 'childcare', v: bChildcare, auto: true},
+                {k: 'transportation', v: trans, auto: false},
+                {k: 'food', v: foodCost, auto: false},
+                {k: 'health', v: bHealth, auto: true}
             ];
 
             let cumulativePct = 0;
@@ -1171,7 +1195,8 @@
                 div.className = `h-full border-r border-white/20 ${EXPENSE_INFO[exp.k].tailwind} transition-all duration-500 cursor-pointer hover:opacity-90`;
                 div.style.width = `${visualPct}%`;
                 
-                const tooltipText = `${EXPENSE_INFO[exp.k].icon} ${EXPENSE_INFO[exp.k].name}: ${formatMoney(exp.v)}/mo`;
+                const sourceTag = exp.auto ? " (Automated)" : "";
+                const tooltipText = `${EXPENSE_INFO[exp.k].icon} ${EXPENSE_INFO[exp.k].name}${sourceTag}: ${formatMoney(exp.v)}/mo`;
                 
                 // Add pop-out tooltip event listeners
                 div.addEventListener('mouseenter', (e) => showTooltip(e, tooltipText));
@@ -1179,12 +1204,8 @@
                 div.addEventListener('mouseleave', hideTooltip);
                 
                 // Touch events for mobile
-                div.addEventListener('touchstart', (e) => {
-                    showTooltip(e, tooltipText);
-                }, {passive: true});
-                div.addEventListener('touchmove', (e) => {
-                    moveTooltip(e);
-                }, {passive: true});
+                div.addEventListener('touchstart', (e) => showTooltip(e, tooltipText), {passive: true});
+                div.addEventListener('touchmove', (e) => moveTooltip(e), {passive: true});
                 div.addEventListener('touchend', hideTooltip);
 
                 bar.appendChild(div);
@@ -1246,16 +1267,18 @@
                 tbody.appendChild(tr);
             });
 
-            // Insert User Inputted Budget Row
+            // Insert User Combined Budget Row
             const userAnnual = gameState.userBudget.income * 12;
             const userHourly = userAnnual / (gameState.workingAdults * 2080);
+            const userHousing = gameState.currentData ? gameState.currentData.housing : 0;
+
             const userTr = document.createElement('tr');
             userTr.className = "bg-blue-50 font-bold border-l-4 border-blue-500 text-blue-900";
             userTr.innerHTML = `
-                <td class="p-3 md:p-4 truncate">👤 YOUR BUDGET</td>
+                <td class="p-3 md:p-4 truncate">👤 YOUR STATED BUDGET</td>
                 <td class="p-3 md:p-4">$${userHourly > 0 ? userHourly.toFixed(2) : '0.00'}</td>
                 <td class="p-3 md:p-4">$${Math.round(userAnnual).toLocaleString()}</td>
-                <td class="p-3 md:p-4">$${Math.round(gameState.userBudget.housing).toLocaleString()}</td>
+                <td class="p-3 md:p-4">$${Math.round(userHousing).toLocaleString()} <span class="text-[10px] text-amber-700 font-medium">(Auto)</span></td>
             `;
             
             // Prepend User Row at the top to make it prominent
@@ -1303,6 +1326,7 @@
             window.requestAnimationFrame(step);
         }
 
+        // Tooltip logic for income & paycheck bars
         const tooltipEl = document.getElementById('bar-tooltip');
 
         function showTooltip(e, text) {
